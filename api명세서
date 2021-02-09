@@ -9,11 +9,6 @@ User authentication
       - user_id
       - password
       - name
-      - email
-      - age
-      - sex
-      - tel
-      - major
    - return type
       - success
          {
@@ -21,10 +16,9 @@ User authentication
              "success" : true,
              "message" : "회원가입성공",
              "data" : {
-                 "user_id" : "testid"
+                 "user_id" : "test@naver.com"
                  "password" : "testpassword"
                  "name" : "test"
-                 "email" : "test@naver.com" 
             }
          }
       - failure
@@ -176,7 +170,8 @@ Data handling
                         "quiz_id": 3
                         "correct": false
                     }
-                ]
+                ],
+                "score" : "4/6"
               }
           }
        - failure
