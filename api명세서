@@ -1,0 +1,436 @@
+User authentication
+1. 회원가입
+   - url "/register"
+   - method
+      - post
+   - description
+      - 회원가입을 시도합니다.
+   - form parameter
+      - user_id
+      - password
+      - name
+   - return type
+      - success
+         {
+             "status" : 200, 
+             "success" : true,
+             "message" : "회원가입성공",
+             "data" : {
+                 "user_id" : "test@naver.com"
+                 "password" : "testpassword"
+                 "name" : "test"
+            }
+         }
+      - failure
+         {
+             "status" : 400,
+             "success" : false
+             "message" : "형식 오류"
+         }
+        - failure
+            {
+                "status" : 404
+                "success" : false,
+                "message" : "Not Found"
+            }
+        - failure
+            {
+                "status" : 500
+                "success" : false,
+                "message" : "Internal Server Error"
+
+            }
+        - failure
+            {
+                "status" : 502
+                "success" : false,
+                "message" : "Bad Gateway"
+            }      
+
+
+2. 로그인
+   - url "/login"
+   - method
+      - post (보안 문제 때문에 post로 처리합니다.)
+   - description
+      - 로그인을 시도합니다.
+   - form parameter
+      - user_id
+      - password
+   - return type
+      - success
+         {
+             "status" : 200,
+             "success" : true,
+             "message" : "로그인 성공"
+             "data" : {
+                 "user_id" : "testid"
+                 "password" : "testpassword"
+             }
+         }
+      - failure
+         {
+             "status" : 400,
+             "success" : false,
+             "message" : "형식 오류"
+         }
+      - failure
+            {
+                "status" : 404
+                "success" : false,
+                "message" : "Not Found"
+            }
+      - failure
+            {
+                "status" : 500
+                "success" : false,
+                "message" : "Internal Server Error"
+
+            }
+      - failure
+            {
+                "status" : 502
+                "success" : false,
+                "message" : "Bad Gateway"
+            }         
+
+Data handling
+1. 텍스트 입력
+   - url "/summary"
+   - method
+      - post (텍스트 길이가 커서 post로 처리합니다.)
+   - description
+      - 텍스트 데이터를 요약합니다.
+   - form parameter
+      - text
+      - book_title
+      - book_author
+      - input_type
+         - 'informal' or 'literary'
+      - count
+         - '3' or '5' or '7'
+   - return type
+      - success
+         {
+             "status" : 200,
+             "success" : true,
+             "data" : {
+                "input_type" : "informal",
+                "count" : 3,
+                "summary_id" : 4
+             }
+         }
+      - failure
+         {
+             "staus" : 400,
+             "success" : false,
+             "message" : "형식 오류"
+         }
+        - failure
+            {
+                "status" : 404
+                "success" : false,
+                "message" : "Not Found"
+            }
+        - failure
+            {
+                "status" : 500
+                "success" : false,
+                "message" : "Internal Server Error"
+
+            }
+        - failure
+            {
+                "status" : 502
+                "success" : false,
+                "message" : "Bad Gateway"
+            }
+
+            
+
+2. 요약 반환
+   - url "/summary/$summary_id"
+   - method
+      - get (텍스트 길이가 커서 post로 처리합니다.)
+   - description
+      - 텍스트 데이터를 요약합니다.
+   - form parameter
+      - summary_id
+   - return type
+      - success
+         {
+             "status" : 200,
+             "success" : true,
+             "data" : {
+                "content" : "요약된 문장입니다", // 요약된 문장
+                "summary_id" : 4
+             }
+         }
+      - failure
+         {
+             "staus" : 400,
+             "success" : false,
+             "message" : "형식 오류"
+         }
+      - failure
+         {
+             "staus" : 404,
+             "success" : false,
+             "message" : "요약을 찾을 수 없음"
+         }
+        - failure
+            {
+                "status" : 404
+                "success" : false,
+                "message" : "Not Found"
+            }
+        - failure
+            {
+                "status" : 500
+                "success" : false,
+                "message" : "Internal Server Error"
+
+            }
+        - failure
+            {
+                "status" : 502
+                "success" : false,
+                "message" : "Bad Gateway"
+            }
+
+
+
+3. 퀴즈 가져오기
+   - url "$quiz_type/$sumarry_id"
+   - method
+       - get
+   - description
+       - 퀴즈 불러오기
+   - query parameter
+       - summary_id
+       - quiz_type
+   - return type
+       - success
+          {
+              "status" : 200,
+              "success": true,
+              "message" : "퀴즈를 불러옵니다"
+              "data" : {
+                  "quiz_list": [ // 퀴즈 배열
+                    {
+                        "quiz_id" : 1
+                        "content" : "퀴즈1 내용입니다"
+                    },
+                    {
+                        "quiz_id" : 2
+                        "content" : "퀴즈2 내용입니다"
+                    },
+                    {
+                        "quiz_id" : 3
+                        "content" : "퀴즈3 내용입니다"
+                    }
+                ]
+              }
+          }
+       - failure
+          {
+              "status" : 400,
+              "success": false,
+              "message" : "형식 오류"
+          }
+        - failure
+            {
+                "status" : 404
+                "success" : false,
+                "message" : "Not Found"
+            }
+        - failure
+            {
+                "status" : 500
+                "success" : false,
+                "message" : "Internal Server Error"
+
+            }
+        - failure
+            {
+                "status" : 502
+                "success" : false,
+                "message" : "Bad Gateway"
+            }
+
+
+
+4. 퀴즈 채점
+   - url "/scoring"
+   - method
+        - post
+   - description
+        - 퀴즈 답 입력 받은 후 채점해서 결과 return
+    - header
+        - jwt
+   - form parameter
+        - "quiz_list": [
+            {
+                -quiz_id
+                -my_answer
+            }
+        ]
+   - return type
+       - success
+          {
+              "status": 200
+              "success": true,
+              "data" : {
+                "correct_list": [
+                    {
+                        "quiz_id": 1
+                        "content" : "퀴즈1 내용입니다",
+                        "correct": true
+                    },
+                    {
+                        "quiz_id": 2,
+                        "content" : "퀴즈2 내용입니다",
+                        "correct": true
+                    },                   
+                    {
+                        "quiz_id": 3
+                        "content" : "퀴즈3 내용입니다",
+                        "correct": false
+                    }
+                ],
+                "score" : "2/3"
+              }
+          }
+       - failure
+          {
+              "status": 400
+              "success": false
+              "message": "형식 오류"
+          }
+        - failure
+            {
+                "status" : 404
+                "success" : false,
+                "message" : "Not Found"
+            }
+        - failure
+            {
+                "status" : 500
+                "success" : false,
+                "message" : "Internal Server Error"
+
+            }
+        - failure
+            {
+                "status" : 502
+                "success" : false,
+                "message" : "Bad Gateway"
+            }
+
+
+
+5. 질의응답 질문하기
+    - url "/qna"
+    - method
+        - get
+    - description
+        - ai에 질문하기
+    - header
+        - jwt
+    - form parameter
+        - sumarry_id
+        - question
+   - return type
+       - success
+          {
+              "status" : 200,
+              "success" : true,
+              "message" : "질의응답 성공",
+              "data" : {
+                  "answer" : "정답은 ㅇㅇㅇ입니다."
+                  "confidence" : 90
+              }
+          }
+       - failure
+          {
+              "status": 400,
+              "success": false,
+              "message": "형식 오류"
+          }
+        - failure
+            {
+                "status" : 404
+                "success" : false,
+                "message" : "Not Found"
+            }
+        - failure
+            {
+                "status" : 500
+                "success" : false,
+                "message" : "Internal Server Error"
+
+            }
+        - failure
+            {
+                "status" : 502
+                "success" : false,
+                "message" : "Bad Gateway"
+            }
+
+
+6. 요약 검색
+    - url "/search/$searchterm"
+    - method
+        - get
+    - description
+        - 요약 검색
+    - query parameter
+        - searchterm
+    - return type
+        - success
+          {
+              "status" : 200,
+              "success" : true,
+              "message" : "요약 검색 결과를 보여줍니다",
+              "data" : {
+                    "search_result": [
+                    {
+                        "book_title" : "책1 제목",
+                        "summary_id" : 1
+                    },
+                    {
+                        "book_title" : "책2 제목",
+                        "summary_id" : 1
+                    },                   
+                    {
+                        "book_title" : "책3 제목",
+                        "summary_id" : 3
+                    }
+                ]
+              }
+          }
+        - failure
+           {
+               "status" : 400,
+               "success" : false,
+               "message" : "형식 오류"
+           }
+        - failure
+            {
+                "status" : 404
+                "success" : false,
+                "message" : "Not Found"
+            }
+        - failure
+            {
+                "status" : 500
+                "success" : false,
+                "message" : "Internal Server Error"
+
+            }
+        - failure
+            {
+                "status" : 502
+                "success" : false,
+                "message" : "Bad Gateway"
+            }
