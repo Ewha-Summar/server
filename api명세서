@@ -27,7 +27,27 @@ User authentication
              "success" : false
              "message" : "필요한 값이 없음"
          }
-      
+        - failure
+            {
+                "status" : 404
+                "success" : false,
+                "message" : "Not Found"
+            }
+        - failure
+            {
+                "status" : 500
+                "success" : false,
+                "message" : "Internal Server Error"
+
+            }
+        - failure
+            {
+                "status" : 502
+                "success" : false,
+                "message" : "Bad Gateway"
+            }      
+
+
 2. 로그인
    - url "/login"
    - method
@@ -60,7 +80,25 @@ User authentication
              "success" : false,
              "message" : "아이디가 존재하지 않음"
          }
-         
+      - failure
+            {
+                "status" : 404
+                "success" : false,
+                "message" : "Not Found"
+            }
+      - failure
+            {
+                "status" : 500
+                "success" : false,
+                "message" : "Internal Server Error"
+
+            }
+      - failure
+            {
+                "status" : 502
+                "success" : false,
+                "message" : "Bad Gateway"
+            }         
 
 Data handling
 1. 텍스트 입력
@@ -94,7 +132,27 @@ Data handling
              "success" : false,
              "message" : "필요한 값이 없음"
          }
+        - failure
+            {
+                "status" : 404
+                "success" : false,
+                "message" : "Not Found"
+            }
+        - failure
+            {
+                "status" : 500
+                "success" : false,
+                "message" : "Internal Server Error"
 
+            }
+        - failure
+            {
+                "status" : 502
+                "success" : false,
+                "message" : "Bad Gateway"
+            }
+
+            
 
 2. 요약 반환
    - url "/summary/$summary_id"
@@ -126,6 +184,26 @@ Data handling
              "success" : false,
              "message" : "요약을 찾을 수 없음"
          }
+        - failure
+            {
+                "status" : 404
+                "success" : false,
+                "message" : "Not Found"
+            }
+        - failure
+            {
+                "status" : 500
+                "success" : false,
+                "message" : "Internal Server Error"
+
+            }
+        - failure
+            {
+                "status" : 502
+                "success" : false,
+                "message" : "Bad Gateway"
+            }
+
 
 
 3. 퀴즈 가져오기
@@ -166,6 +244,25 @@ Data handling
               "success": false,
               "message" : "퀴즈를 불러올 수 없습니다"
           }
+        - failure
+            {
+                "status" : 404
+                "success" : false,
+                "message" : "Not Found"
+            }
+        - failure
+            {
+                "status" : 500
+                "success" : false,
+                "message" : "Internal Server Error"
+
+            }
+        - failure
+            {
+                "status" : 502
+                "success" : false,
+                "message" : "Bad Gateway"
+            }
 
 
 
@@ -175,6 +272,8 @@ Data handling
         - post
    - description
         - 퀴즈 답 입력 받은 후 채점해서 결과 return
+    - header
+        - jwt
    - form parameter
         - "quiz_list": [
             {
@@ -214,6 +313,26 @@ Data handling
               "success": false
               "message": "에러입니다"
           }
+        - failure
+            {
+                "status" : 404
+                "success" : false,
+                "message" : "Not Found"
+            }
+        - failure
+            {
+                "status" : 500
+                "success" : false,
+                "message" : "Internal Server Error"
+
+            }
+        - failure
+            {
+                "status" : 502
+                "success" : false,
+                "message" : "Bad Gateway"
+            }
+
 
 
 5. 질의응답 질문하기
@@ -222,7 +341,10 @@ Data handling
         - get
     - description
         - ai에 질문하기
+    - header
+        - jwt
     - form parameter
+        - sumarry_id
         - question
    - return type
        - success
@@ -241,6 +363,25 @@ Data handling
               "success": false,
               "message": "에러입니다"
           }
+        - failure
+            {
+                "status" : 404
+                "success" : false,
+                "message" : "Not Found"
+            }
+        - failure
+            {
+                "status" : 500
+                "success" : false,
+                "message" : "Internal Server Error"
+
+            }
+        - failure
+            {
+                "status" : 502
+                "success" : false,
+                "message" : "Bad Gateway"
+            }
 
 
 6. 요약 검색
@@ -261,18 +402,15 @@ Data handling
                     "search_result": [
                     {
                         "book_title" : "책1 제목",
-                        "book_image" : "book1.png",
-                        "content_title" : "요약1 제목"
+                        "summary_id" : 1
                     },
                     {
                         "book_title" : "책2 제목",
-                        "book_image" : "book2.png",
-                        "content_title" : "요약2 제목"
+                        "summary_id" : 1
                     },                   
                     {
                         "book_title" : "책3 제목",
-                        "book_image" : "book3.png",
-                        "content_title" : "요약3 제목"
+                        "summary_id" : 3
                     }
                 ]
               }
@@ -283,3 +421,22 @@ Data handling
                "success" : false,
                "message" : "검색에 실패했습니다."
            }
+        - failure
+            {
+                "status" : 404
+                "success" : false,
+                "message" : "Not Found"
+            }
+        - failure
+            {
+                "status" : 500
+                "success" : false,
+                "message" : "Internal Server Error"
+
+            }
+        - failure
+            {
+                "status" : 502
+                "success" : false,
+                "message" : "Bad Gateway"
+            }
