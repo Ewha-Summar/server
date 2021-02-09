@@ -170,7 +170,7 @@ Data handling
 
 
 4. 퀴즈 채점
-   - url "/scoring/$quiz_type/$sumarry_id"
+   - url "/scoring"
    - method
         - post
    - description
@@ -182,9 +182,6 @@ Data handling
                 -my_answer
             }
         ]
-    - query parameter
-        - quiz_type
-        - summary_id
    - return type
        - success
           {
@@ -194,14 +191,17 @@ Data handling
                 "correct_list": [
                     {
                         "quiz_id": 1
+                        "content" : "퀴즈1 내용입니다",
                         "correct": true
                     },
                     {
-                        "quiz_id": 2
+                        "quiz_id": 2,
+                        "content" : "퀴즈2 내용입니다",
                         "correct": true
                     },                   
                     {
                         "quiz_id": 3
+                        "content" : "퀴즈3 내용입니다",
                         "correct": false
                     }
                 ],
@@ -244,7 +244,7 @@ Data handling
 
 
 6. 요약 검색
-    - url "/search"
+    - url "/search/$searchterm"
     - method
         - get
     - description
