@@ -170,7 +170,7 @@ Data handling
 
 
 4. 퀴즈 채점
-   - url "/scoring"
+   - url "/scoring/$quiz_type/$sumarry_id"
    - method
         - post
    - description
@@ -182,6 +182,9 @@ Data handling
                 -my_answer
             }
         ]
+    - query parameter
+        - quiz_type
+        - summary_id
    - return type
        - success
           {
@@ -202,7 +205,7 @@ Data handling
                         "correct": false
                     }
                 ],
-                "score" : "4/6"
+                "score" : "2/3"
               }
           }
        - failure
