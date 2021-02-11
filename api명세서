@@ -154,7 +154,7 @@ Data handling
 2. 요약 반환
    - url "/summary/$summary_id"
    - method
-      - get (텍스트 길이가 커서 post로 처리합니다.)
+      - get
    - description
       - 텍스트 데이터를 요약합니다.
     - header
