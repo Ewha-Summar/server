@@ -64,6 +64,7 @@ User authentication
              "success" : true,
              "message" : "로그인 성공"
              "data" : {
+                 "accessToken" : "accessToken",
                  "user_id" : "testid"
                  "password" : "testpassword"
              }
@@ -101,6 +102,8 @@ Data handling
       - post (텍스트 길이가 커서 post로 처리합니다.)
    - description
       - 텍스트 데이터를 요약합니다.
+    - header
+        - jwt
    - form parameter
       - text
       - book_title
@@ -154,6 +157,8 @@ Data handling
       - get (텍스트 길이가 커서 post로 처리합니다.)
    - description
       - 텍스트 데이터를 요약합니다.
+    - header
+        - jwt
    - form parameter
       - summary_id
    - return type
@@ -206,6 +211,8 @@ Data handling
        - get
    - description
        - 퀴즈 불러오기
+    - header
+        - jwt
    - query parameter
        - summary_id
        - quiz_type
@@ -384,6 +391,8 @@ Data handling
         - get
     - description
         - 요약 검색
+    - header
+        - jwt
     - query parameter
         - searchterm
     - return type
