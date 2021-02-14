@@ -32,6 +32,7 @@ stop_words = ['의', '가', '이', '은', '들', '는', '좀', '잘',
 
 data = pd.DataFrame()
 
+
 def preprocess_sentence(sentence):
     sentence = [re.sub(r'[^가-힣\s]', '', word) for word in sentence]
     return [word for word in sentence if word not in stop_words and word]
@@ -39,7 +40,6 @@ def preprocess_sentence(sentence):
 
 def preprocess_sentences(sentences):
     return [preprocess_sentence(sentence) for sentence in sentences]
-#a-zA-Z, 즉 영어는 포함 안되게 했음
 
 
 def tokenization(sentences):
@@ -93,28 +93,20 @@ def ranked_sentences(sentences, scores, n):
 
 def make_summary(text, count, data):
     data['sentences'] = data['article_text'].apply(sent_tokenize)
-    kovec = Word2Vec.load("D:\ko.bin")
-
     model = Word2Vec(data, sg=1, size=100, window=3, min_count=3, workers=4)
-
     data['tokenized_data'] = data['sentences'].apply(tokenization)
-
     data['tokenized_data'] = data['tokenized_data'].apply(preprocess_sentences)
-
     data['SentenceEmbedding'] = data['tokenized_data'].apply(
         sentences_to_vectors)
-    data[['SentenceEmbedding']]
     data['SimMatrix'] = data['SentenceEmbedding'].apply(similarity_matrix)
     data['score'] = data['SimMatrix'].apply(calculate_score)
-
     data['summary_user'] = data.apply(lambda x:
                                       ranked_sentences(x.sentences, x.score, n=count), axis=1)
 
     data['summary_7'] = data.apply(lambda x:
                                    ranked_sentences(x.sentences, x.score, n=7), axis=1)
 
-    return data.loc[0].summary_user #user summary
-
+    return data.loc[0].summary_user  # user summary
 
 
 # # 문제 만들기
@@ -150,7 +142,6 @@ def ranked_words(tokenized_data, scores, n=100):
     top_scores = sorted(((scores[i], s)
                          for i, s in enumerate(tokenized_data)),
                         reverse=True)
-    #top_n_sentences=[sentence for score,sentence in top_scores[:n]]
     top_n_sentences = []
     for score, word in top_scores:
         if word not in top_n_sentences:
@@ -159,9 +150,9 @@ def ranked_words(tokenized_data, scores, n=100):
 
 
 # ### 형태소 분석을 이용한 빈칸뚫기
-def make_blank(data):
+def make_blank(data, type):
     data['important_word'] = data.apply(lambda x:
-                                    ranked_words(x.token, x.word_score), axis=1)
+                                        ranked_words(x.token, x.word_score), axis=1)
     np.set_printoptions(threshold=sys.maxsize)
     word_set = data['important_word'][0]
 
@@ -180,92 +171,87 @@ def make_blank(data):
         }
     }
     http = urllib3.PoolManager()
-    response = http.request(
+    if type == 0:
+        response = http.request(
+            "POST",
+            openApiURL,
+            headers={"Content-Type": "application/json; charset=UTF-8"},
+            body=json.dumps(requestJson)
+        )
+    else:
+        response = http.request(
         "POST",
-        openApiURL,
+        openApiURL2,
         headers={"Content-Type": "application/json; charset=UTF-8"},
         body=json.dumps(requestJson)
     )
+    if str(response.status) == '200':
+        # create json object using string
+        data_2 = json.loads(str(response.data, "utf-8"))
 
+        sentence = data_2['return_object']['sentence']  # get the data of sentences
+        for s in sentence:
+            for w in s['word']:  # for loop : words
+                text = w['text']  # the text of word
+                text_id = int(w['id'])  # the id of word
+                begin = int(w['begin'])  # the beginning index of morphemes in word
+                end = int(w['end'])  # the ending index of morphemes in word
+                for i in range(begin, end+1):  # for : morphemes
+                    lemma = s['morp'][i]['lemma']  # morpheme
+                    pos = s['morp'][i]['type']  # tag
+                    if pos == "NNG":
+                        sys.stdout.write(lemma+"\n")
+                        result += lemma+" "
+                    if pos == "NNP":
+                        sys.stdout.write(lemma+"\n")
+                        result += lemma+" "
+
+        # ### 위에서 추린 단어들을 사용자가 입력한 텍스트 전반의 키워드 중심으로 중요도 재배열
+        arr = result.split(" ")
+        dict = {}
+        for word in arr:
+            try:
+                dict[word] = kovec.wv.similarity("범죄", word)
+            except:
+                dict[word] = 0
+        sdict = sorted(dict.items(), key=operator.itemgetter(1), reverse=True)
+        blank_arr = []
+        for idx in range(len(sdict)):
+            blank_arr.append(sdict[idx][0])
+
+        # ### 문제 생성
+        question_arr = []
+        result_arr = []
+        for question in data['summary_sentences'][0]:
+            for word in blank_arr:
+                question_tmp = question.replace(word, "*"*len(word))
+                if question_tmp != question:
+                    question_arr.append(question_tmp)
+                    result_arr.append(word)
+                    break
+        return question_arr, result_arr     
+    else: 
+        return response.status, None
+        
     #print("[responseCode] " + str(response.status))
-    #print("[responBody]")
-
-    # create json object using string
-    data_2 = json.loads(str(response.data, "utf-8"))
-
-    sentence = data_2['return_object']['sentence']  # get the data of sentences
-    for s in sentence:
-        for w in s['word']:  # for loop : words
-            text = w['text']  # the text of word
-            text_id = int(w['id'])  # the id of word
-            begin = int(w['begin'])  # the beginning index of morphemes in word
-            end = int(w['end'])  # the ending index of morphemes in word
-            for i in range(begin, end+1):  # for : morphemes
-                lemma = s['morp'][i]['lemma']  # morpheme
-                pos = s['morp'][i]['type']  # tag
-                if pos == "NNG":
-                    sys.stdout.write(lemma+"\n")
-                    result += lemma+" "
-                if pos == "NNP":
-                    sys.stdout.write(lemma+"\n")
-                    result += lemma+" "
-    print()
-
-    # ### 위에서 추린 단어들을 사용자가 입력한 텍스트 전반의 키워드 중심으로 중요도 재배열
-
-    arr = result.split(" ")
-    dict = {}
-
-    for word in arr:
-        try:
-            dict[word] = kovec.wv.similarity("범죄", word)
-        except:
-            dict[word] = 0
-
-    sdict = sorted(dict.items(), key=operator.itemgetter(1), reverse=True)
-    #print(sdict)
 
 
-    blank_arr = []
-    for idx in range(len(sdict)):
-        blank_arr.append(sdict[idx][0])
-
-    # ### 문제 생성
-    question_arr = []
-    result_arr = []
-    for question in data['summary_sentences'][0]:
-        for word in blank_arr:
-            question_tmp = question.replace(word, "*"*len(word))
-            if question_tmp != question:
-                question_arr.append(question_tmp)
-                result_arr.append(word)
-                break
-
-    data['question_arr'] = question_arr
-    data['result_arr'] = result_arr
-
-
-
-def make_quiz(data):
+def make_quiz(data, type):
     data['summary_sentences'] = data['summary_7'].apply(sent_tokenize)
-
-    data['tokenized_data_for_word'] = data['summary_sentences'].apply(tokenization)
-
-    data['tokenized_data_for_word'] = data['tokenized_data_for_word'].apply(preprocess_sentences)
-
+    data['tokenized_data_for_word'] = data['summary_sentences'].apply(
+        tokenization)
+    data['tokenized_data_for_word'] = data['tokenized_data_for_word'].apply(
+        preprocess_sentences)
     data['token'] = data['tokenized_data_for_word'].apply(list_to_string)
-
     data['word_value'] = data['token'].apply(words_to_vectors)
-
     data['SimMatrix_word'] = data['word_value'].apply(similarity_matrix)
-
     data['word_score'] = data['SimMatrix_word'].apply(calculate_score)
+    question_arr, result_arr = make_blank(data, type)
+    return question_arr, result_arr
 
-    make_blank(data)
 
-
-def total(text, count):
-    data = pd.DataFrame({"article_text":[text]})
+def total(text, count, type):
+    data = pd.DataFrame({"article_text": [text]})
     make_summary(text, count, data)
-    make_quiz(data)
-    return data
+    question_arr, result_arr = make_quiz(data, type)
+    return data.loc[0].summary_user, question_arr, result_arr
