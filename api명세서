@@ -106,19 +106,20 @@ Data handling
         - jwt
    - form parameter
       - text
+      - summary_title
       - book_title
       - book_author
       - input_type
-         - 'informal' or 'literary'
+         - 0(문어) or 1(구어)
       - count
-         - '3' or '5' or '7'
+         - 3 or 5 or 7
    - return type
       - success
          {
              "status" : 200,
              "success" : true,
              "data" : {
-                "input_type" : "informal",
+                "input_type" : 0,
                 "count" : 3,
                 "summary_id" : 4
              }
