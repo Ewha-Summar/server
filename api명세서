@@ -464,7 +464,7 @@ Data handling
             "message" : "사용자 요약 보여주기",
             "data" : {
                 "user_id": "사용자",
-                "search_result": [
+                "summary_result": [
                 {
                     "summary_id" : 1,
                     "summary_title" : "요약1 제목",
