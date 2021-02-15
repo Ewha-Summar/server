@@ -54,6 +54,7 @@ def summary():
             
             response['status'] = 200
             response['success'] = True
+            response['message'] = "요약 및 퀴즈를 생성합니다"
             data['content'] = summary_user
             data['summary_id'] = summary_id
             response['data'] = data
@@ -111,6 +112,7 @@ def summary_return(summary_id):
     response = {}
     response['status'] = 200
     response['success'] = True
+    response['message'] = "요약을 반환합니다"
     response['data'] = data
 
     return jsonify(response)
@@ -135,6 +137,7 @@ def quiz_return(quiz_type, summary_id):
     data['quiz_list'] = result
     response['status'] = 200
     response['success'] = True
+    response['message'] = "퀴즈를 가져옵니다"
     response['data'] = data
 
     return jsonify(response)
@@ -178,6 +181,7 @@ def scoring():
 
     response['status'] = 200
     response['success'] = True
+    response['message'] = "퀴즈를 채점합니다"
     response['data'] = data
     response['score'] = str(correct_num) + '/' + str(len(quizes))
 
@@ -201,3 +205,65 @@ def scoring():
         ],
     "score" : "1/2"
     """    
+
+
+@app.route('/userSummary')
+def userSummary():
+    response = {}
+    data = {}
+    user_id = "aa"
+    summary_r = []
+    sql = "SELECT * FROM Summary WHERE user_id = ?" #query_db 실행 후 저장
+    results = query_db(sql, [user_id])
+    data['user_id'] = user_id
+    for result in results:
+        summary = {}
+        summary['summary_id'] = result['summary_id']
+        summary['summary_title'] = result['summary_title']
+        summary['content'] = result['af_summary']
+        summary['book_title'] = result['book_title']
+        summary['book_author'] = result['book_author']
+        summary_r.append(summary)
+    
+    response['status'] = 200
+    response['success'] = True
+    response['message'] = "사용자 요약 보여주기"
+    data['summary_result'] = summary_r
+    response['data'] = data
+
+    return jsonify(response)
+
+
+
+    """
+    "status" : 200,
+    "success" : True,
+    "message" : "사용자 요약 보여주기",
+    "data" : {
+        "user_id": "사용자",
+        "summary_result": [
+        {
+            "summary_id" : 1,
+            "summary_title" : "요약1 제목",
+            "content" : "요약1 내용",
+            "book_title" : "책1 제목",
+            "book_author" : "책1 저자"
+        },
+        {
+            "summary_id" : 2,
+            "summary_title" : "요약2 제목",
+            "content" : "요약2 내용",
+            "book_title" : "책2 제목",
+            "book_author" : "책2 저자"
+        }
+        ]
+
+
+    `summary_id` INT NOT NULL AUTO_INCREMENT,
+    `user_id` VARCHAR(25) NOT NULL,
+    `summary_title` VARCHAR(100) NOT NULL,
+    `bf_summary` VARCHAR(5000) NOT NULL,
+    `af_summary` VARCHAR(2000) NOT NULL,
+    `input_type` INT NOT NULL,
+    `book_title` VARCHAR(50) NULL,
+    """
