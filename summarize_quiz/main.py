@@ -113,6 +113,7 @@ def summary_return(summary_id):
     response['success'] = True
     response['data'] = data
 
+    return jsonify(response)
     """
     "status" : 200,
     "success" : true,
