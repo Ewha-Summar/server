@@ -161,7 +161,7 @@ Data handling
       - 텍스트 데이터를 요약합니다.
     - header
         - jwt
-   - form parameter
+   - query parameter
       - summary_id
    - return type
       - success
@@ -447,3 +447,58 @@ Data handling
                 "success" : False,
                 "message" : "Bad Gateway"
             }
+
+
+7. 사용자 요약 보여주기
+    - url "/userSummary"
+    - method
+        - post
+    - description
+        - 사용자의 요약을 보여줍니다
+    - header
+        - jwt
+    - return type
+        - success {
+            "status" : 200,
+            "success" : True,
+            "message" : "사용자 요약 보여주기",
+            "data" : {
+                "user_id": "사용자",
+                "search_result": [
+                {
+                    "summary_id" : 1,
+                    "summary_title" : "요약1 제목",
+                    "content" : "요약1 내용",
+                    "book_title" : "책1 제목",
+                    "book_author" : "책1 저자"
+                },
+                {
+                    "summary_id" : 2,
+                    "summary_title" : "요약2 제목",
+                    "content" : "요약2 내용",
+                    "book_title" : "책2 제목",
+                    "book_author" : "책2 저자"
+                }
+                ]
+            }             
+        }
+        - failure {
+            "status" : 400,
+            "success" : False,
+            "message" : "형식 오류"
+        }
+        - failure {
+            "status" : 404
+            "success" : False,
+            "message" : "Not Found"
+        }
+        - failure {
+            "status" : 500
+            "success" : False,
+            "message" : "Internal Server Error"
+        }
+        - failure {
+            "status" : 502
+            "success" : False,
+            "message" : "Bad Gateway"
+        }
