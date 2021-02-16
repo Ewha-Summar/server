@@ -4,6 +4,7 @@ import json
 from flask import Flask, request, g, abort, jsonify
 
 app = Flask(__name__)
+app.config['JSON_AS_ASCII'] = False
 
 
 text = """우리는 많은 시간 인터넷을 이용하고 있지만, 이는 인터넷 회선을 통해 인터넷 서비스를 이용하는 것일 뿐, 내 컴퓨터 안의 파일이 인터넷에 연결되어 있는 것은 아닙니다. HTML로 웹사이트를 만들고 그 내용을 다른 사람들이 볼 수 있도록 하려면 HTML로 만든 웹 문서를 모두 서버 컴퓨터로 옮겨야 합니다. 서버(server)컴퓨터란 전용선을 통해 인터넷에 직접 연결되어 있는 컴퓨터를 가리키는데, 24시간 인터넷에 연결되어있고 서버 컴퓨터 접속 주소만 알면 누구나 서버 컴퓨터의 내용을 볼 수 있습니다. 
@@ -11,6 +12,20 @@ text = """우리는 많은 시간 인터넷을 이용하고 있지만, 이는 �
 웹 디자이너나 웹 개발자들은 자신이 제작한 최신 웹사이트를 항상 서버 컴퓨터에 업로드해 놓기 때문에 사용자들은 자신의 위치에 상관없이 어디에서나 인터넷에 접속해서 해당 웹사이트의 내용을 볼 수 있습니다. 
 개인은 웹 서버를 마련하기 어렵기 때문에 서버의 일부 공간을 매달 혹은 몇 년마다 일정 금액을 내고 사용하는 서비스를 이용합니다. 이것을 '서버 호스팅 서비스' 혹은 '웹 호스팅 서비스'라고 하는데, 개인 웹사이트를 운영하는 사람들은 대부분 이런 호스팅 서비스를 이용합니다.
 호스팅 서비스는 어떤 서버를 이용하느냐에 따라 윈도우 서버 호스팅과 리눅스 서버 호스팅으로 나뉘는데, 윈도우 서버에서는 ASP나 ASAP.NET 프로그래밍 언어를 사용하고, 리눅스 서버에서는 PHP 프로그래밍 언어를 사용하며 좀 더 대중적이고 저렴합니다."""
+
+#인터넷에서 긁어온 소스
+@app.errorhandler(HTTPException)
+def error_handler(e):
+    response = e.get_response()
+
+    response.data = json.dumps({
+        'status': e.code,
+        'success': False,
+        'message': e.description,
+    })
+    response.content_type = 'application/json'
+
+    return response
 
 
 def query_db(query, args=(), one=False):
@@ -23,7 +38,6 @@ def query_db(query, args=(), one=False):
     return (rv[0] if rv else None) if one else rv
 
 
-
 @app.route('/summary', methods=['POST'])
 def summary():
     data = {}
@@ -31,17 +45,20 @@ def summary():
 
     user_id = "aa"
     if request.method == 'POST':
-        summary_user, question_arr, result_arr = total(request.form['text'], request.form['count'], request.form['input_type'])#0은 문어체, 1은 구어체
+        summary_user, question_arr, result_arr = total(
+            request.form['text'], request.form['count'], request.form['input_type'])  # 0은 문어체, 1은 구어체
 
         #error 없는 상황
         if result_arr is not None:
             sql = "INSERT INTO Summary (user_id, summary_title, bf_summary, af_summary, input_type, book_title, book_author) VALUES (?, ?, ?, ?, ?, ?, ?)"
             g.db.execute(sql, [
-                user_id, request.form['summary_title'], request.form['text'], summary_user, request.form['input_type'], request.form['book_title'], request.form['book_author']
+                user_id, request.form['summary_title'], request.form['text'], summary_user, request.form[
+                    'input_type'], request.form['book_title'], request.form['book_author']
             ])
             g.db.commit()
-            sql = "SELECT LAST_INSERT_ID()" #summary_id 를 가져오는 부분, 가장 최근에 수행된 AUTO INCREMENT 값을 반환
-            summary_id = g.db.execute(sql).fetchone()  #하나만 가져옴
+            # summary_id 를 가져오는 부분, 가장 최근에 수행된 AUTO INCREMENT 값을 반환
+            sql = "SELECT LAST_INSERT_ID()"
+            summary_id = g.db.execute(sql).fetchone()  # 하나만 가져옴
 
             quiz_date = 1/2
 
@@ -51,20 +68,19 @@ def summary():
                     request.form['quiz_type'], question_arr[i], quiz_date, user_id, summary_id, request.form['book_title'], result_arr[i]
                 ])
                 g.db.commit()
-            
+
             response['status'] = 200
             response['success'] = True
             response['message'] = "요약 및 퀴즈를 생성합니다"
             data['content'] = summary_user
             data['summary_id'] = summary_id
             response['data'] = data
+            return jsonify(response)
         #error 발생 상황
         else:
-            response['status'] = question_arr
-            response['success'] = False
-            response['message'] = "error message"
-        return jsonify(response)
+            abort(question_arr)
         #result_arr가 None인 경우 question_arr에 responseCode가 저장되어 있음
+
 
 """
 sql문 작성
@@ -101,11 +117,10 @@ sql문 작성
 """
 
 
-
 @app.route('/summary/<summary_id>', methods=['GET'])
 def summary_return(summary_id):
     data = {}
-    sql = "SELECT af_summary FROM Summary WHERE summary_id = ?" #summary_id에 따라 
+    sql = "SELECT af_summary FROM Summary WHERE summary_id = ?"  # summary_id에 따라
     data['content'] = g.db.execute(sql).fetchone()
     data['summary_id'] = summary_id
 
@@ -126,13 +141,13 @@ def summary_return(summary_id):
     """
 
 
-
 @app.route('/<quiz_type>/<summary_id>', methods=['GET'])
 def quiz_return(quiz_type, summary_id):
     data = {}
     response = {}
     data['quiz_list'] = []
-    sql = "SELECT quiz_id, quiz_content FROM Quiz WHERE quiz_type = ? and summary_id = ?" #query_db 실행 후 저장
+    # query_db 실행 후 저장
+    sql = "SELECT quiz_id, quiz_content FROM Quiz WHERE quiz_type = ? and summary_id = ?"
     result = query_db(sql, [quiz_type, summary_id])
     data['quiz_list'] = result
     response['status'] = 200
@@ -166,7 +181,8 @@ def scoring():
     response = {}
     correct_num = 0
     for quiz in quizes:
-        sql = "SELECT quiz_content, correct_answer FROM Quiz WHERE quiz.quiz_id = ?" #query_db 실행 후 저장
+        # query_db 실행 후 저장
+        sql = "SELECT quiz_content, correct_answer FROM Quiz WHERE quiz.quiz_id = ?"
         result = g.db.execute(sql, [quiz.quiz_id]).fetchone()
         q = {}
         q['quiz_id'] = quiz.quiz_id
@@ -177,7 +193,6 @@ def scoring():
         else:
             q['correct'] = False
         data['correct_list'].append(q)
-
 
     response['status'] = 200
     response['success'] = True
@@ -204,7 +219,7 @@ def scoring():
             }
         ],
     "score" : "1/2"
-    """    
+    """
 
 
 @app.route('/userSummary')
@@ -213,7 +228,7 @@ def userSummary():
     data = {}
     user_id = "aa"
     summary_r = []
-    sql = "SELECT * FROM Summary WHERE user_id = ?" #query_db 실행 후 저장
+    sql = "SELECT * FROM Summary WHERE user_id = ?"  # query_db 실행 후 저장
     results = query_db(sql, [user_id])
     data['user_id'] = user_id
     for result in results:
@@ -224,7 +239,7 @@ def userSummary():
         summary['book_title'] = result['book_title']
         summary['book_author'] = result['book_author']
         summary_r.append(summary)
-    
+
     response['status'] = 200
     response['success'] = True
     response['message'] = "사용자 요약 보여주기"
@@ -232,8 +247,6 @@ def userSummary():
     response['data'] = data
 
     return jsonify(response)
-
-
 
     """
     "status" : 200,
