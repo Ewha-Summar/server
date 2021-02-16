@@ -175,6 +175,7 @@ def quiz_return(quiz_type, summary_id):
 
 @app.route('/scoring', methods=['POST'])
 def scoring():
+    user_id = 'gg'
     quizes = request.form['quiz_list']
     data = {}
     data['correct_list'] = []
@@ -199,10 +200,22 @@ def scoring():
     response['message'] = "퀴즈를 채점합니다"
     response['data'] = data
     response['score'] = str(correct_num) + '/' + str(len(quizes))
+    
+    sql = "INSERT INTO Score (user_id, summary_id, score) VALUES (?, ?, ?)"
+    g.db.execute(sql, [
+        user_id, request.form['summary_id'], response['score']
+    ])
+    g.db.commit()
 
     return jsonify(response)
 
     """
+    `score_id` INT NOT NULL AUTO_INCREMENT,
+    `user_id` VARCHAR(25) NOT NULL,
+    `summary_id` INT NOT NULL,
+    `score` INT NOT NULL,
+
+
     "status": 200
     "success": true,
     "data" : {
