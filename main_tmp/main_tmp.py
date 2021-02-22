@@ -254,7 +254,7 @@ def userSummary():
         summary['book_title'] = result[7]
         summary['book_author'] = result[8]
         summary_r.append(summary)
-
+        #book_title, author가 없는 경우에 index 에러 안나는지 확인 못해봄.
     response['status'] = 200
     response['success'] = True
     response['message'] = "사용자 요약 보여주기"
