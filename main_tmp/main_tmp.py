@@ -21,6 +21,7 @@ text = """우리는 많은 시간 인터넷을 이용하고 있지만, 이는 �
 호스팅 서비스는 어떤 서버를 이용하느냐에 따라 윈도우 서버 호스팅과 리눅스 서버 호스팅으로 나뉘는데, 윈도우 서버에서는 ASP나 ASAP.NET 프로그래밍 언어를 사용하고, 리눅스 서버에서는 PHP 프로그래밍 언어를 사용하며 좀 더 대중적이고 저렴합니다."""
 '''
 
+
 @app.errorhandler(HTTPException)
 def error_handler(e):
     response = e.get_response()
@@ -35,17 +36,9 @@ def error_handler(e):
     return response
 
 
-def query_db(query, args=(), one=False):
-    cur = app.database.execute(text(query), args)
-    rv = [
-        dict((cur.description[idx][0], value) for idx, value in enumerate(row))
-        for row in cur.fetchall()
-    ]
-    #cursor fetch 후 row에 하나씩 넣어줌. 그 row를 enumerate 돌려서 idx, value로 dict를 만듦
-    return (rv[0] if rv else None) if one else rv
-
 @app.route("/")
 def index():
+    print("main페이지")
     return "Hello World"
 
 
@@ -56,14 +49,14 @@ def summary():
 
     user_id = "test@naver.com"
 
-
     if request.method == 'POST':
         print(user_id)
         req = request.json
         bf_summary = req['bf_summary']
         count = req['count']
         input_type = req['input_type']
-        summary_user, question_arr, result_arr = total(bf_summary, count, input_type)
+        summary_user, question_arr, result_arr = total(
+            bf_summary, count, input_type)
         req['af_summary'] = summary_user
         req['user_id'] = user_id
         #error 없는 상황
@@ -88,7 +81,7 @@ def summary():
             :book_title,
             :book_author
         )"""), req)
-            
+
             # summary_id 를 가져오는 부분, 가장 최근에 수행된 AUTO INCREMENT 값을 반환
             sql = "SELECT LAST_INSERT_ID()"
             summary_id = app.database.execute(sql).fetchone()  # 하나만 가져옴
@@ -120,7 +113,6 @@ def summary():
                 :correct_answer
             )"""), req)
 
-
             response['status'] = 200
             response['success'] = True
             response['message'] = "요약 및 퀴즈를 생성합니다"
@@ -133,15 +125,19 @@ def summary():
             abort(question_arr)
         #result_arr가 None인 경우 question_arr에 responseCode가 저장되어 있음
 
-#여기까지 완성, 테스트 완료
 
-
-@app.route('/summary/<summary_id>', methods=['GET'])
-def summary_return(summary_id):
+@app.route('/summary', methods=['GET'])
+def summary_return():
+    summaryid = request.args.get('summary_id')
     data = {}
-    sql = "SELECT af_summary FROM Summary WHERE summary_id = ?"  # summary_id에 따라
-    data['content'] = app.database.execute(sql).fetchone()
-    data['summary_id'] = summary_id
+    data['content'] = app.database.execute(text("""
+        SELECT
+            af_summary
+        FROM Summary
+        WHERE summary_id = :summaryid
+    """), {'summaryid': summaryid}).fetchone()[0]
+
+    data['summary_id'] = summaryid
 
     response = {}
     response['status'] = 200
@@ -152,15 +148,28 @@ def summary_return(summary_id):
     return jsonify(response)
 
 
-@app.route('/<quiz_type>/<summary_id>', methods=['GET'])
-def quiz_return(quiz_type, summary_id):
+@app.route('/quiz', methods=['GET'])
+def quiz_return():
+    quiz_type = request.args.get('quiz_type')
+    summary_id = request.args.get('summary_id')
     data = {}
     response = {}
     data['quiz_list'] = []
-    # query_db 실행 후 저장
-    sql = "SELECT quiz_id, quiz_content FROM Quiz WHERE quiz_type = ? and summary_id = ?"
-    result = query_db(sql, [quiz_type, summary_id])
-    data['quiz_list'] = result
+    results = app.database.execute(text("""
+        SELECT
+            quiz_id,
+            quiz_content
+        FROM Quiz
+        WHERE quiz_type = :quiz_type 
+        and summary_id = :summary_id
+    """), {'quiz_type': quiz_type, 'summary_id': summary_id}).fetchall()
+
+    for result in results:
+        quiz = {}
+        quiz['quiz_id'] = result[0]
+        quiz['content'] = result[1]
+        data['quiz_list'].append(quiz)
+
     response['status'] = 200
     response['success'] = True
     response['message'] = "퀴즈를 가져옵니다"
@@ -171,37 +180,55 @@ def quiz_return(quiz_type, summary_id):
 
 @app.route('/scoring', methods=['POST'])
 def scoring():
-    user_id = 'gg'
-    quizes = request.form['quiz_list']
+    req = request.json
+    user_id = 'test@naver.com'
+    quizes = req['quiz_list']
     data = {}
     data['correct_list'] = []
     response = {}
     correct_num = 0
     for quiz in quizes:
-        # query_db 실행 후 저장
-        sql = "SELECT quiz_content, correct_answer FROM Quiz WHERE quiz.quiz_id = ?"
-        result = app.database.execute(sql, [quiz.quiz_id]).fetchone()
+        result = app.database.execute(text("""
+        SELECT
+            quiz_content,
+            correct_answer
+        FROM Quiz
+        WHERE quiz_id = :quiz_id 
+        """), quiz).fetchone()
+
         q = {}
-        q['quiz_id'] = quiz.quiz_id
-        q['content'] = result['content']
-        if quiz.my_answer == result['correct_answer']:
+        q['quiz_id'] = quiz['quiz_id']
+        q['content'] = result[0]
+        if quiz['my_answer'] == result[1]:
             q['correct'] = True
             correct_num += 1
         else:
             q['correct'] = False
         data['correct_list'].append(q)
+    data['score'] = correct_num/len(quizes)
+    #data['score'] = str(correct_num) + '/' + str(len(quizes))
+
+    scoreInfo = {}
+    scoreInfo['user_id'] = user_id
+    scoreInfo['summary_id'] = req['summary_id']
+    scoreInfo['score'] = data['score']
+
+    app.database.execute(text("""
+    INSERT INTO Score(
+        user_id, 
+        summary_id, 
+        score
+    ) VALUES (
+        :user_id,
+        :summary_id,
+        :score
+    )
+    """), scoreInfo)
 
     response['status'] = 200
     response['success'] = True
     response['message'] = "퀴즈를 채점합니다"
     response['data'] = data
-    response['score'] = str(correct_num) + '/' + str(len(quizes))
-
-    sql = "INSERT INTO Score (user_id, summary_id, score) VALUES (?, ?, ?)"
-    app.database.execute(sql, [
-        user_id, request.form['summary_id'], response['score']
-    ])
-    # g.db.commit()
 
     return jsonify(response)
 
@@ -210,18 +237,22 @@ def scoring():
 def userSummary():
     response = {}
     data = {}
-    user_id = "aa"
+    user_id = 'test@naver.com'
     summary_r = []
-    sql = "SELECT * FROM Summary WHERE user_id = ?"  # query_db 실행 후 저장
-    results = query_db(sql, [user_id])
+    results = app.database.execute(text("""
+        SELECT
+            *
+        FROM Summary
+        WHERE user_id = :user_id 
+    """), {'user_id': user_id}).fetchall()
     data['user_id'] = user_id
     for result in results:
         summary = {}
-        summary['summary_id'] = result['summary_id']
-        summary['summary_title'] = result['summary_title']
-        summary['content'] = result['af_summary']
-        summary['book_title'] = result['book_title']
-        summary['book_author'] = result['book_author']
+        summary['summary_id'] = result[0]
+        summary['summary_title'] = result[2]
+        summary['content'] = result[4]
+        summary['book_title'] = result[7]
+        summary['book_author'] = result[8]
         summary_r.append(summary)
 
     response['status'] = 200
