@@ -233,7 +233,6 @@ def make_blank(data, type):
     else: 
         return response.status, None
         
-    #print("[responseCode] " + str(response.status))
 
 
 def make_quiz(data, type):
