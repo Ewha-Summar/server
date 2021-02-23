@@ -24,25 +24,25 @@ User authentication
       - failure
          {
              "status" : 400,
-             "success" : false
+             "success" : false,
              "message" : "형식 오류"
          }
         - failure
             {
-                "status" : 404
+                "status" : 404,
                 "success" : false,
                 "message" : "Not Found"
             }
         - failure
             {
-                "status" : 500
+                "status" : 500,
                 "success" : false,
                 "message" : "Internal Server Error"
 
             }
         - failure
             {
-                "status" : 502
+                "status" : 502,
                 "success" : false,
                 "message" : "Bad Gateway"
             }      
@@ -62,11 +62,10 @@ User authentication
          {
              "status" : 200,
              "success" : true,
-             "message" : "로그인 성공"
+             "message" : "로그인 성공",
              "data" : {
                  "accessToken" : "accessToken",
                  "user_id" : "testid"
-                 "password" : "testpassword"
              }
          }
       - failure
@@ -76,21 +75,27 @@ User authentication
              "message" : "형식 오류"
          }
       - failure
+         {
+             "status" : 401,
+             "success" : false,
+             "message" : "중복된 아이디"
+         } 
+      - failure
             {
-                "status" : 404
+                "status" : 404,
                 "success" : false,
                 "message" : "Not Found"
             }
       - failure
             {
-                "status" : 500
+                "status" : 500,
                 "success" : false,
                 "message" : "Internal Server Error"
 
             }
       - failure
             {
-                "status" : 502
+                "status" : 502,
                 "success" : false,
                 "message" : "Bad Gateway"
             }         
