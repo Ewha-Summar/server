@@ -1,7 +1,7 @@
 db = {
-    'user'     : 'root',
-    'password' : '1234',
-    'host'     : 'localhost',
+    'user'     : 'admin',
+    'password' : 'ewha2020summar',
+    'host'     : 'db-summar-server.cpemlh0lctvc.us-east-2.rds.amazonaws.com',
     'port'     : 3306,
     'database' : 'summardb'
 }
