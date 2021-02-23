@@ -209,7 +209,7 @@ Data handling
 
 
 3. 퀴즈 가져오기
-   - url "$quiz_type/$sumarry_id"
+   - url "/quiz/$quiz_type/$sumarry_id"
    - method
        - get
    - description
@@ -279,6 +279,7 @@ Data handling
     - header
         - jwt
    - form parameter
+        - "summary_id"
         - "quiz_list": [
             {
                 -quiz_id
