@@ -13,8 +13,8 @@ User authentication
       - success
          {
              "status" : 200, 
-             "success" : true,
-             "message" : "회원가입성공",
+             "success" : True,
+             "message" : "회원가입 성공",
              "data" : {
                  "user_id" : "test@naver.com"
                  "password" : "testpassword"
@@ -24,26 +24,26 @@ User authentication
       - failure
          {
              "status" : 400,
-             "success" : false,
+             "success" : False,
              "message" : "형식 오류"
          }
         - failure
             {
                 "status" : 404,
-                "success" : false,
+                "success" : False,
                 "message" : "Not Found"
             }
         - failure
             {
                 "status" : 500,
-                "success" : false,
+                "success" : False,
                 "message" : "Internal Server Error"
 
             }
         - failure
             {
                 "status" : 502,
-                "success" : false,
+                "success" : False,
                 "message" : "Bad Gateway"
             }      
 
@@ -61,7 +61,7 @@ User authentication
       - success
          {
              "status" : 200,
-             "success" : true,
+             "success" : True,
              "message" : "로그인 성공",
              "data" : {
                  "accessToken" : "accessToken",
@@ -71,25 +71,25 @@ User authentication
       - failure
          {
              "status" : 400,
-             "success" : false,
+             "success" : False,
              "message" : "형식 오류"
          }
       - failure
          {
              "status" : 401,
-             "success" : false,
+             "success" : False,
              "message" : "중복된 아이디"
          } 
       - failure
             {
                 "status" : 404,
-                "success" : false,
+                "success" : False,
                 "message" : "Not Found"
             }
       - failure
             {
                 "status" : 500,
-                "success" : false,
+                "success" : False,
                 "message" : "Internal Server Error"
 
             }
@@ -111,19 +111,21 @@ Data handling
         - jwt
    - form parameter
       - text
+      - summary_title
       - book_title
       - book_author
       - input_type
-         - 'informal' or 'literary'
+         - 0(문어) or 1(구어)
       - count
-         - '3' or '5' or '7'
+         - 3 or 5 or 7
    - return type
       - success
          {
              "status" : 200,
-             "success" : true,
+             "success" : True,
+             "message" : "요약 및 퀴즈를 생성합니다.",
              "data" : {
-                "input_type" : "informal",
+                "input_type" : 0,
                 "count" : 3,
                 "summary_id" : 4
              }
@@ -131,26 +133,26 @@ Data handling
       - failure
          {
              "staus" : 400,
-             "success" : false,
+             "success" : False,
              "message" : "형식 오류"
          }
         - failure
             {
                 "status" : 404
-                "success" : false,
+                "success" : False,
                 "message" : "Not Found"
             }
         - failure
             {
                 "status" : 500
-                "success" : false,
+                "success" : False,
                 "message" : "Internal Server Error"
 
             }
         - failure
             {
                 "status" : 502
-                "success" : false,
+                "success" : False,
                 "message" : "Bad Gateway"
             }
 
@@ -164,13 +166,14 @@ Data handling
       - 텍스트 데이터를 요약합니다.
     - header
         - jwt
-   - form parameter
+   - query parameter
       - summary_id
    - return type
       - success
          {
              "status" : 200,
-             "success" : true,
+             "success" : True,
+             "message" : "요약을 반환합니다.",
              "data" : {
                 "content" : "요약된 문장입니다", // 요약된 문장
                 "summary_id" : 4
@@ -179,32 +182,32 @@ Data handling
       - failure
          {
              "staus" : 400,
-             "success" : false,
+             "success" : False,
              "message" : "형식 오류"
          }
       - failure
          {
              "staus" : 404,
-             "success" : false,
+             "success" : False,
              "message" : "요약을 찾을 수 없음"
          }
         - failure
             {
                 "status" : 404
-                "success" : false,
+                "success" : False,
                 "message" : "Not Found"
             }
         - failure
             {
                 "status" : 500
-                "success" : false,
+                "success" : False,
                 "message" : "Internal Server Error"
 
             }
         - failure
             {
                 "status" : 502
-                "success" : false,
+                "success" : False,
                 "message" : "Bad Gateway"
             }
 
@@ -225,8 +228,8 @@ Data handling
        - success
           {
               "status" : 200,
-              "success": true,
-              "message" : "퀴즈를 불러옵니다"
+              "success" : True,
+              "message" : "퀴즈를 가져옵니다.",
               "data" : {
                   "quiz_list": [ // 퀴즈 배열
                     {
@@ -247,26 +250,26 @@ Data handling
        - failure
           {
               "status" : 400,
-              "success": false,
+              "success": False,
               "message" : "형식 오류"
           }
         - failure
             {
                 "status" : 404
-                "success" : false,
+                "success" : False,
                 "message" : "Not Found"
             }
         - failure
             {
                 "status" : 500
-                "success" : false,
+                "success" : False,
                 "message" : "Internal Server Error"
 
             }
         - failure
             {
                 "status" : 502
-                "success" : false,
+                "success" : False,
                 "message" : "Bad Gateway"
             }
 
@@ -291,23 +294,24 @@ Data handling
        - success
           {
               "status": 200
-              "success": true,
-              "data" : {
+              "success": True,
+              "message": "퀴즈를 채점합니다.",
+              "data": {
                 "correct_list": [
                     {
                         "quiz_id": 1
                         "content" : "퀴즈1 내용입니다",
-                        "correct": true
+                        "correct": True
                     },
                     {
                         "quiz_id": 2,
                         "content" : "퀴즈2 내용입니다",
-                        "correct": true
+                        "correct": True
                     },                   
                     {
                         "quiz_id": 3
                         "content" : "퀴즈3 내용입니다",
-                        "correct": false
+                        "correct": False
                     }
                 ],
                 "score" : "2/3"
@@ -316,26 +320,26 @@ Data handling
        - failure
           {
               "status": 400
-              "success": false
+              "success": False
               "message": "형식 오류"
           }
         - failure
             {
                 "status" : 404
-                "success" : false,
+                "success" : False,
                 "message" : "Not Found"
             }
         - failure
             {
                 "status" : 500
-                "success" : false,
+                "success" : False,
                 "message" : "Internal Server Error"
 
             }
         - failure
             {
                 "status" : 502
-                "success" : false,
+                "success" : False,
                 "message" : "Bad Gateway"
             }
 
@@ -356,7 +360,7 @@ Data handling
        - success
           {
               "status" : 200,
-              "success" : true,
+              "success" : True,
               "message" : "질의응답 성공",
               "data" : {
                   "answer" : "정답은 ㅇㅇㅇ입니다."
@@ -366,26 +370,26 @@ Data handling
        - failure
           {
               "status": 400,
-              "success": false,
+              "success": False,
               "message": "형식 오류"
           }
         - failure
             {
                 "status" : 404
-                "success" : false,
+                "success" : False,
                 "message" : "Not Found"
             }
         - failure
             {
                 "status" : 500
-                "success" : false,
+                "success" : False,
                 "message" : "Internal Server Error"
 
             }
         - failure
             {
                 "status" : 502
-                "success" : false,
+                "success" : False,
                 "message" : "Bad Gateway"
             }
 
@@ -404,7 +408,7 @@ Data handling
         - success
           {
               "status" : 200,
-              "success" : true,
+              "success" : True,
               "message" : "요약 검색 결과를 보여줍니다",
               "data" : {
                     "search_result": [
@@ -426,25 +430,80 @@ Data handling
         - failure
            {
                "status" : 400,
-               "success" : false,
+               "success" : False,
                "message" : "형식 오류"
            }
         - failure
             {
                 "status" : 404
-                "success" : false,
+                "success" : False,
                 "message" : "Not Found"
             }
         - failure
             {
                 "status" : 500
-                "success" : false,
+                "success" : False,
                 "message" : "Internal Server Error"
 
             }
         - failure
             {
                 "status" : 502
-                "success" : false,
+                "success" : False,
                 "message" : "Bad Gateway"
             }
+
+
+7. 사용자 요약 보여주기
+    - url "/userSummary"
+    - method
+        - post
+    - description
+        - 사용자의 요약을 보여줍니다
+    - header
+        - jwt
+    - return type
+        - success {
+            "status" : 200,
+            "success" : True,
+            "message" : "사용자 요약 보여주기",
+            "data" : {
+                "user_id": "사용자",
+                "summary_result": [
+                {
+                    "summary_id" : 1,
+                    "summary_title" : "요약1 제목",
+                    "content" : "요약1 내용",
+                    "book_title" : "책1 제목",
+                    "book_author" : "책1 저자"
+                },
+                {
+                    "summary_id" : 2,
+                    "summary_title" : "요약2 제목",
+                    "content" : "요약2 내용",
+                    "book_title" : "책2 제목",
+                    "book_author" : "책2 저자"
+                }
+                ]
+            }             
+        }
+        - failure {
+            "status" : 400,
+            "success" : False,
+            "message" : "형식 오류"
+        }
+        - failure {
+            "status" : 404
+            "success" : False,
+            "message" : "Not Found"
+        }
+        - failure {
+            "status" : 500
+            "success" : False,
+            "message" : "Internal Server Error"
+        }
+        - failure {
+            "status" : 502
+            "success" : False,
+            "message" : "Bad Gateway"
+        }
