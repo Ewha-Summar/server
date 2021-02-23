@@ -176,10 +176,8 @@ def summary():
             data['summary_id'] = summary_id[0]
             response['data'] = data
             return jsonify(response)
-        #error 발생 상황
         else:
             abort(question_arr)
-        #result_arr가 None인 경우 question_arr에 responseCode가 저장되어 있음
 
 
 @app.route('/api/summary', methods=['GET'])
@@ -272,7 +270,6 @@ def scoring():
         """), quiz)        
         data['correct_list'].append(q)
     data['score'] = correct_num/len(quizes)
-    #data['score'] = str(correct_num) + '/' + str(len(quizes))
 
     scoreInfo = {}
     scoreInfo['user_id'] = user_id
@@ -298,35 +295,6 @@ def scoring():
 
     return jsonify(response)
 
-'''
-@app.route('/api/mypagequiz')
-def mypagequiz():
-    response = {}
-    data = {}
-    user_id = 'test@naver.com'
-    results = app.database.execute(text("""
-        SELECT
-            *
-        FROM Quiz
-        WHERE user_id = :user_id 
-    """), {'user_id': user_id}).fetchall()
-
-    quiz_list = []
-    for result in results:
-        quiz = {}
-        quiz['quiz_id'] = result[0]
-        quiz['quiz_type'] = result[1]
-        quiz['quiz_content'] = result[2]
-        quiz['quiz_date'] = result[3]
-        #quiz['summary_id'] = result[5]
-        quiz['book_title'] = result[6]
-        quiz['my_answer'] = result[7]
-        quiz['correct_answer'] = result[8]
-        quiz['correct'] = result[9]
-        quiz_list[result[5]].append(quiz)
-    
-'''
-
 
 @app.route('/api/userSummary')
 def userSummary():
@@ -349,7 +317,6 @@ def userSummary():
         summary['book_title'] = result[7]
         summary['book_author'] = result[8]
         summary_r.append(summary)
-        #book_title, author가 없는 경우에 index 에러 안나는지 확인 못해봄.
     response['status'] = 200
     response['success'] = True
     response['message'] = "사용자 요약 보여주기"
@@ -358,4 +325,5 @@ def userSummary():
 
     return jsonify(response)
 
-app.run()
+if __name__ == "__main__":
+    app.run()
