@@ -42,7 +42,7 @@ def index():
     return "Hello World"
 
 
-@app.route("/summary", methods=['POST'])
+@app.route("/api/summary", methods=['POST'])
 def summary():
     data = {}
     response = {}
@@ -126,7 +126,7 @@ def summary():
         #result_arr가 None인 경우 question_arr에 responseCode가 저장되어 있음
 
 
-@app.route('/summary', methods=['GET'])
+@app.route('/api/summary', methods=['GET'])
 def summary_return():
     summaryid = request.args.get('summary_id')
     data = {}
@@ -148,7 +148,7 @@ def summary_return():
     return jsonify(response)
 
 
-@app.route('/quiz', methods=['GET'])
+@app.route('/api/quiz', methods=['GET'])
 def quiz_return():
     quiz_type = request.args.get('quiz_type')
     summary_id = request.args.get('summary_id')
@@ -163,7 +163,7 @@ def quiz_return():
         WHERE quiz_type = :quiz_type 
         and summary_id = :summary_id
     """), {'quiz_type': quiz_type, 'summary_id': summary_id}).fetchall()
-
+    
     for result in results:
         quiz = {}
         quiz['quiz_id'] = result[0]
@@ -178,7 +178,7 @@ def quiz_return():
     return jsonify(response)
 
 
-@app.route('/scoring', methods=['POST'])
+@app.route('/api/scoring', methods=['POST'])
 def scoring():
     req = request.json
     user_id = 'test@naver.com'
@@ -201,9 +201,19 @@ def scoring():
         q['content'] = result[0]
         if quiz['my_answer'] == result[1]:
             q['correct'] = True
+            quiz['correct'] = True
             correct_num += 1
         else:
             q['correct'] = False
+            quiz['correct'] = False
+
+        app.database.execute(text("""
+        UPDATE Quiz
+        SET
+            my_answer = :my_answer,
+            correct = :correct
+        WHERE quiz_id = :quiz_id
+        """), quiz)        
         data['correct_list'].append(q)
     data['score'] = correct_num/len(quizes)
     #data['score'] = str(correct_num) + '/' + str(len(quizes))
@@ -232,8 +242,37 @@ def scoring():
 
     return jsonify(response)
 
+'''
+@app.route('/api/mypagequiz')
+def mypagequiz():
+    response = {}
+    data = {}
+    user_id = 'test@naver.com'
+    results = app.database.execute(text("""
+        SELECT
+            *
+        FROM Quiz
+        WHERE user_id = :user_id 
+    """), {'user_id': user_id}).fetchall()
 
-@app.route('/userSummary')
+    quiz_list = []
+    for result in results:
+        quiz = {}
+        quiz['quiz_id'] = result[0]
+        quiz['quiz_type'] = result[1]
+        quiz['quiz_content'] = result[2]
+        quiz['quiz_date'] = result[3]
+        #quiz['summary_id'] = result[5]
+        quiz['book_title'] = result[6]
+        quiz['my_answer'] = result[7]
+        quiz['correct_answer'] = result[8]
+        quiz['correct'] = result[9]
+        quiz_list[result[5]].append(quiz)
+    
+'''
+
+
+@app.route('/api/userSummary')
 def userSummary():
     response = {}
     data = {}
