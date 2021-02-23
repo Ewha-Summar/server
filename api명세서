@@ -1,6 +1,6 @@
 User authentication
 1. 회원가입
-   - url "/register"
+   - url "/api/register"
    - method
       - post
    - description
@@ -49,7 +49,7 @@ User authentication
 
 
 2. 로그인
-   - url "/login"
+   - url "/api/login"
    - method
       - post (보안 문제 때문에 post로 처리합니다.)
    - description
@@ -96,13 +96,13 @@ User authentication
       - failure
             {
                 "status" : 502,
-                "success" : false,
+                "success" : False,
                 "message" : "Bad Gateway"
             }         
 
 Data handling
 1. 텍스트 입력
-   - url "/summary"
+   - url "/api/summary"
    - method
       - post (텍스트 길이가 커서 post로 처리합니다.)
    - description
@@ -138,20 +138,20 @@ Data handling
          }
         - failure
             {
-                "status" : 404
+                "status" : 404,
                 "success" : False,
                 "message" : "Not Found"
             }
         - failure
             {
-                "status" : 500
+                "status" : 500,
                 "success" : False,
                 "message" : "Internal Server Error"
 
             }
         - failure
             {
-                "status" : 502
+                "status" : 502,
                 "success" : False,
                 "message" : "Bad Gateway"
             }
@@ -159,7 +159,7 @@ Data handling
             
 
 2. 요약 반환
-   - url "/summary/$summary_id"
+   - url "/api/summary/$summary_id"
    - method
       - get
    - description
@@ -193,20 +193,20 @@ Data handling
          }
         - failure
             {
-                "status" : 404
+                "status" : 404,
                 "success" : False,
                 "message" : "Not Found"
             }
         - failure
             {
-                "status" : 500
+                "status" : 500,
                 "success" : False,
                 "message" : "Internal Server Error"
 
             }
         - failure
             {
-                "status" : 502
+                "status" : 502,
                 "success" : False,
                 "message" : "Bad Gateway"
             }
@@ -214,7 +214,7 @@ Data handling
 
 
 3. 퀴즈 가져오기
-   - url "$quiz_type/$sumarry_id"
+   - url "/api/$quiz_type/$sumarry_id"
    - method
        - get
    - description
@@ -233,15 +233,15 @@ Data handling
               "data" : {
                   "quiz_list": [ // 퀴즈 배열
                     {
-                        "quiz_id" : 1
+                        "quiz_id" : 1,
                         "content" : "퀴즈1 내용입니다"
                     },
                     {
-                        "quiz_id" : 2
+                        "quiz_id" : 2,
                         "content" : "퀴즈2 내용입니다"
                     },
                     {
-                        "quiz_id" : 3
+                        "quiz_id" : 3,
                         "content" : "퀴즈3 내용입니다"
                     }
                 ]
@@ -255,20 +255,20 @@ Data handling
           }
         - failure
             {
-                "status" : 404
+                "status" : 404,
                 "success" : False,
                 "message" : "Not Found"
             }
         - failure
             {
-                "status" : 500
+                "status" : 500,
                 "success" : False,
                 "message" : "Internal Server Error"
 
             }
         - failure
             {
-                "status" : 502
+                "status" : 502,
                 "success" : False,
                 "message" : "Bad Gateway"
             }
@@ -276,7 +276,7 @@ Data handling
 
 
 4. 퀴즈 채점
-   - url "/scoring"
+   - url "/api/scoring"
    - method
         - post
    - description
@@ -299,7 +299,7 @@ Data handling
               "data": {
                 "correct_list": [
                     {
-                        "quiz_id": 1
+                        "quiz_id": 1,
                         "content" : "퀴즈1 내용입니다",
                         "correct": True
                     },
@@ -319,26 +319,26 @@ Data handling
           }
        - failure
           {
-              "status": 400
-              "success": False
+              "status": 400,
+              "success": False,
               "message": "형식 오류"
           }
         - failure
             {
-                "status" : 404
+                "status" : 404,
                 "success" : False,
                 "message" : "Not Found"
             }
         - failure
             {
-                "status" : 500
+                "status" : 500,
                 "success" : False,
                 "message" : "Internal Server Error"
 
             }
         - failure
             {
-                "status" : 502
+                "status" : 502,
                 "success" : False,
                 "message" : "Bad Gateway"
             }
@@ -346,7 +346,7 @@ Data handling
 
 
 5. 질의응답 질문하기
-    - url "/qna"
+    - url "/api/qna"
     - method
         - get
     - description
@@ -375,27 +375,27 @@ Data handling
           }
         - failure
             {
-                "status" : 404
+                "status" : 404,
                 "success" : False,
                 "message" : "Not Found"
             }
         - failure
             {
-                "status" : 500
+                "status" : 500,
                 "success" : False,
                 "message" : "Internal Server Error"
 
             }
         - failure
             {
-                "status" : 502
+                "status" : 502,
                 "success" : False,
                 "message" : "Bad Gateway"
             }
 
 
 6. 요약 검색
-    - url "/search/$searchterm"
+    - url "/api/search/$searchterm"
     - method
         - get
     - description
@@ -435,27 +435,27 @@ Data handling
            }
         - failure
             {
-                "status" : 404
+                "status" : 404,
                 "success" : False,
                 "message" : "Not Found"
             }
         - failure
             {
-                "status" : 500
+                "status" : 500,
                 "success" : False,
                 "message" : "Internal Server Error"
 
             }
         - failure
             {
-                "status" : 502
+                "status" : 502,
                 "success" : False,
                 "message" : "Bad Gateway"
             }
 
 
 7. 사용자 요약 보여주기
-    - url "/userSummary"
+    - url "/api/userSummary"
     - method
         - post
     - description
@@ -493,17 +493,17 @@ Data handling
             "message" : "형식 오류"
         }
         - failure {
-            "status" : 404
+            "status" : 404,
             "success" : False,
             "message" : "Not Found"
         }
         - failure {
-            "status" : 500
+            "status" : 500,
             "success" : False,
             "message" : "Internal Server Error"
         }
         - failure {
-            "status" : 502
+            "status" : 502,
             "success" : False,
             "message" : "Bad Gateway"
         }
