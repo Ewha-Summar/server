@@ -1,6 +1,6 @@
 User authentication
 1. 회원가입
-   - url "/register"
+   - url "/api/register"
    - method
       - post
    - description
@@ -49,7 +49,7 @@ User authentication
 
 
 2. 로그인
-   - url "/login"
+   - url "/api/login"
    - method
       - post (보안 문제 때문에 post로 처리합니다.)
    - description
@@ -97,7 +97,7 @@ User authentication
 
 Data handling
 1. 텍스트 입력
-   - url "/summary"
+   - url "/api/summary"
    - method
       - post (텍스트 길이가 커서 post로 처리합니다.)
    - description
@@ -154,7 +154,7 @@ Data handling
             
 
 2. 요약 반환
-   - url "/summary/$summary_id"
+   - url "/api/summary/$summary_id"
    - method
       - get
    - description
@@ -209,7 +209,7 @@ Data handling
 
 
 3. 퀴즈 가져오기
-   - url "/quiz/$quiz_type/$sumarry_id"
+   - url "/api/quiz/$quiz_type/$sumarry_id"
    - method
        - get
    - description
@@ -271,7 +271,7 @@ Data handling
 
 
 4. 퀴즈 채점
-   - url "/scoring"
+   - url "/api/scoring"
    - method
         - post
    - description
@@ -342,7 +342,7 @@ Data handling
 
 
 5. 질의응답 질문하기
-    - url "/qna"
+    - url "/api/qna"
     - method
         - get
     - description
@@ -391,7 +391,7 @@ Data handling
 
 
 6. 요약 검색
-    - url "/search/$searchterm"
+    - url "/api/search/$searchterm"
     - method
         - get
     - description
@@ -451,7 +451,7 @@ Data handling
 
 
 7. 사용자 요약 보여주기
-    - url "/userSummary"
+    - url "/api/userSummary"
     - method
         - post
     - description
