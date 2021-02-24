@@ -1,4 +1,5 @@
 from flask      import Flask, request, jsonify, current_app, g, flash, json
+from flask_cors import CORS
 from sqlalchemy import create_engine, text
 from datetime   import datetime, timedelta
 from werkzeug.exceptions import HTTPException, NotFound
@@ -70,7 +71,8 @@ def login():
     row = app.database.execute(text("""
         SELECT
             user_id,
-            password
+            password,
+            name
         FROM User
         WHERE user_id = :user_id
     """), {'user_id' : user_id}).fetchone()
@@ -108,7 +110,7 @@ def summary():
     if request.method == 'POST':
         print(user_id)
         req = request.json
-        bf_summary = req['bf_summary']
+        bf_summary = req['text']
         count = req['count']
         input_type = req['input_type']
         summary_user, question_arr, result_arr = total(
@@ -130,7 +132,7 @@ def summary():
         ) VALUES (
             :user_id,
             :summary_title,
-            :bf_summary,
+            :text,
             :af_summary,
             :count,
             :input_type,
@@ -326,4 +328,4 @@ def userSummary():
     return jsonify(response)
 
 if __name__ == "__main__":
-    app.run()
+    app.run(host="0.0.0.0", port="5000")

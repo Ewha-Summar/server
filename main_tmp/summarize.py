@@ -22,9 +22,12 @@ import urllib3
 import json
 import requests
 import sys
+import nltk
+
+nltk.download('punkt')
 
 okt = Okt()
-kovec = Word2Vec.load("D:\ko.bin")
+kovec = Word2Vec.load("ko.bin")
 embedding_dim = 200
 zero_vector = np.zeros(embedding_dim)
 stop_words = ['의', '가', '이', '은', '들', '는', '좀', '잘',
@@ -45,9 +48,13 @@ def preprocess_sentences(sentences):
 def tokenization(sentences):
     temp = []
     for sentence in sentences:
+        print(sentence)
+        print(okt.nouns(sentence))
         temp_X = okt.morphs(sentence, stem=True)
+        print("3-1")
         temp_X = [word for word in temp_X]
         temp.append(temp_X)
+    
     return temp
 
 
@@ -92,19 +99,22 @@ def ranked_sentences(sentences, scores, n):
 
 
 def make_summary(text, count, data):
+    print("2-1")
     data['sentences'] = data['article_text'].apply(sent_tokenize)
+    print("2-2")
     model = Word2Vec(data, sg=1, size=100, window=3, min_count=3, workers=4)
+    print("2-3")
     data['tokenized_data'] = data['sentences'].apply(tokenization)
+    print("2-4")
     data['tokenized_data'] = data['tokenized_data'].apply(preprocess_sentences)
-    data['SentenceEmbedding'] = data['tokenized_data'].apply(
-        sentences_to_vectors)
+    print("2-5")
+    data['SentenceEmbedding'] = data['tokenized_data'].apply(sentences_to_vectors)
+    print("2-4")
     data['SimMatrix'] = data['SentenceEmbedding'].apply(similarity_matrix)
     data['score'] = data['SimMatrix'].apply(calculate_score)
-    data['summary_user'] = data.apply(lambda x:
-                                      ranked_sentences(x.sentences, x.score, n=count), axis=1)
+    data['summary_user'] = data.apply(lambda x:ranked_sentences(x.sentences, x.score, n=count), axis=1)
 
-    data['summary_7'] = data.apply(lambda x:
-                                   ranked_sentences(x.sentences, x.score, n=7), axis=1)
+    data['summary_7'] = data.apply(lambda x: ranked_sentences(x.sentences, x.score, n=7), axis=1)
 
     return data.loc[0].summary_user  # user summary
 
@@ -155,7 +165,8 @@ def make_blank(data, type):
                                         ranked_words(x.token, x.word_score), axis=1)
     np.set_printoptions(threshold=sys.maxsize)
     word_set = data['important_word'][0]
-
+    
+    print("1")
     openApiURL = "http://aiopen.etri.re.kr:8000/WiseNLU"
     openApiURL2 = "http://aiopen.etri.re.kr:8000/WiseNLU_spoken"
     accessKey = "d4a16891-dd45-4883-a873-777a8fda8787"
@@ -200,10 +211,10 @@ def make_blank(data, type):
                     lemma = s['morp'][i]['lemma']  # morpheme
                     pos = s['morp'][i]['type']  # tag
                     if pos == "NNG":
-                        sys.stdout.write(lemma+"\n")
+                        #sys.stdout.write(lemma+"\n")
                         result += lemma+" "
                     if pos == "NNP":
-                        sys.stdout.write(lemma+"\n")
+                        #sys.stdout.write(lemma+"\n")
                         result += lemma+" "
 
         # ### 위에서 추린 단어들을 사용자가 입력한 텍스트 전반의 키워드 중심으로 중요도 재배열
@@ -251,6 +262,9 @@ def make_quiz(data, type):
 
 def total(text, count, type):
     data = pd.DataFrame({"article_text": [text]})
+    print("2")
     make_summary(text, count, data)
+    print("3")
     question_arr, result_arr = make_quiz(data, type)
+    print("4")
     return data.loc[0].summary_user, question_arr, result_arr
