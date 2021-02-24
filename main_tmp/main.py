@@ -297,6 +297,63 @@ def scoring():
 
     return jsonify(response)
 
+@app.route('/api/mypagequiz')
+def mypagequiz():
+    response = {}
+    data = {}
+    user_id = 'test@naver.com'
+    results = app.database.execute(text("""
+        SELECT
+            *
+        FROM Quiz
+        WHERE user_id = :user_id 
+    """), {'user_id': user_id}).fetchall()
+
+    quiz_list = []
+    quizes = []
+    last_index = results[0][5]
+    last_quiz_id = results[-1][0]
+    for result in results:
+        quiz = {}
+        quiz['quiz_id'] = result[0]
+        quiz['quiz_type'] = result[1]
+        quiz['quiz_content'] = result[2]
+        #quiz['quiz_date'] = result[3]
+        quiz['summary_id'] = result[5]
+        quiz['book_title'] = result[6]
+        quiz['my_answer'] = result[7]
+        quiz['correct_answer'] = result[8]
+        quiz['correct'] = result[9]
+        if quiz['quiz_id'] == last_quiz_id:#마지막 퀴즈인 경우
+            quizes.append(quiz)
+            dt = {}
+            dt['quiz'] = []
+            for i in quizes:
+                dt['quiz'].append(i)
+            dt['summary_id'] = result[5]
+            quiz_list.append(dt)
+            quizes.clear()
+
+        elif last_index != result[5]:#summary_id가 바뀐경우
+            dt = {}
+            dt['quiz'] = []
+            for i in quizes:
+                dt['quiz'].append(i)
+            dt['summary_id'] = last_index
+            quiz_list.append(dt)
+            quizes.clear()
+            last_index = result[5]
+        if quiz['quiz_id'] != last_quiz_id: quizes.append(quiz)
+
+    data['quiz_list'] = quiz_list
+    data['user_id'] = user_id
+    
+    response['status'] = '200'
+    response['success'] = True
+    response['message'] = "사용자의 퀴즈를 가져옵니다"
+    response['data'] = data
+
+    return jsonify(response)
 
 @app.route('/api/userSummary')
 def userSummary():
