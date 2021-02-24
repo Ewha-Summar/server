@@ -324,7 +324,7 @@ def mypagequiz():
         quiz['my_answer'] = result[7]
         quiz['correct_answer'] = result[8]
         quiz['correct'] = result[9]
-        if quiz['quiz_id'] == last_quiz_id:#마지막 퀴즈인 경우
+        if quiz['quiz_id'] == last_quiz_id:
             quizes.append(quiz)
             dt = {}
             dt['quiz'] = []
@@ -334,7 +334,7 @@ def mypagequiz():
             quiz_list.append(dt)
             quizes.clear()
 
-        elif last_index != result[5]:#summary_id가 바뀐경우
+        elif last_index != result[5]:
             dt = {}
             dt['quiz'] = []
             for i in quizes:
