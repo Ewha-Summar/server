@@ -108,7 +108,6 @@ def summary():
     user_id = "test@naver.com"
 
     if request.method == 'POST':
-        print(user_id)
         req = request.json
         bf_summary = req['text']
         count = req['count']
