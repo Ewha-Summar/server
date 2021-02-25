@@ -377,6 +377,8 @@ def userSummary():
         summary['book_author'] = result[8]
         summary_r.append(summary)
 
+    data['summary_result'] = summary_r
+    
     return jsonify({
         "status": 200,
         "success": True,
