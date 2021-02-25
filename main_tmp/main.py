@@ -376,13 +376,13 @@ def userSummary():
         summary['book_title'] = result[7]
         summary['book_author'] = result[8]
         summary_r.append(summary)
-    response['status'] = 200
-    response['success'] = True
-    response['message'] = "사용자 요약 보여주기"
-    data['summary_result'] = summary_r
-    response['data'] = data
 
-    return jsonify(response)
+    return jsonify({
+        "status": 200,
+        "success": True,
+        "message": "사용자 요약 보여주기",
+        "data": data
+    })
 
 
 @app.route('/api/allSummary')
