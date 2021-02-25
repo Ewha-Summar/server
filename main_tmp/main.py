@@ -384,5 +384,35 @@ def userSummary():
 
     return jsonify(response)
 
+
+@app.route('/api/allSummary')
+def allSummary():
+    response = {}
+    data = {}
+    summary_arr = []
+    results = app.database.execute(text("""
+        SELECT
+            *
+        FROM Summary
+    """)).fetchall()
+    for result in results:
+        summary = {}
+        summary['summary_id'] = result[0]
+        summary['user_id'] = result[1]
+        summary['summary_title'] = result[2]
+        summary['content'] = result[4]
+        summary['book_title'] = result[7]
+        summary['book_author'] = result[8]
+        summary_arr.append(summary)
+    data['summary'] = summary_arr
+
+    return jsonify({
+        "status": 200,
+        "success": True,
+        "message": "모든 요약 반환",
+        "data": data
+    })    
+    
+
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port="5000")
