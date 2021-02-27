@@ -1,5 +1,4 @@
 from flask      import Flask, request, jsonify, current_app, g, flash, json
-from flask_jwt_extended import *
 from flask_cors import CORS
 from sqlalchemy import create_engine, text
 from datetime   import datetime, timedelta
@@ -20,14 +19,10 @@ cors = CORS(app, resources = {
     r"/api/*": {"origin": "*"}
     })
 
-
-@jwt_required
-def get_user_id(request):
-    token = request.headers.get('Authorization')
-    payload = jwt.decode(token, SECRET_KEY, ALGORITHM)
-
-    return payload['user_id']
-
+def get_user_id(user_id):
+    sql = "SELECT user_id FROM User WHERE user_id = ?"
+    rv = app.database.execute(sql, [user_id]).fetchone()
+    return rv[0] if rv else None
 
 @app.errorhandler(HTTPException)
 def error_handler(e):
@@ -41,7 +36,6 @@ def error_handler(e):
     response.content_type = 'application/json'
 
     return response
-
 
 @app.route("/api/signup", methods=['POST'])
 def signup():
@@ -68,7 +62,6 @@ def signup():
         "name": new_user['name']
     })
 
-
 @app.route('/api/login', methods=['POST'])
 def login():
     user = request.json
@@ -91,6 +84,7 @@ def login():
             'user_id' : user_id
         }
         token = jwt.encode(payload, SECRET_KEY, ALGORITHM)
+        # print(token)
 
         return jsonify({
             "status": 200,
@@ -107,15 +101,11 @@ def login():
             "message": "Incorrect password"
         })
 
-
 @app.route("/api/summary", methods=['POST'])
 def summary():
     data = {}
     response = {}
-    user_id = get_user_id(request)
-    #token = request.headers.get("Authorization")
-    #payload = jwt.decode(token, SECRET_KEY, ALGORITHM)
-    #user_id = payload['user_id']
+    user_id = "test@naver.com"
 
     if request.method == 'POST':
         req = request.json

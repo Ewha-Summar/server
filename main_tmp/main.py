@@ -1,4 +1,5 @@
 from flask      import Flask, request, jsonify, current_app, g, flash, json
+from flask_jwt_extended import *
 from flask_cors import CORS
 from sqlalchemy import create_engine, text
 from datetime   import datetime, timedelta
@@ -19,10 +20,13 @@ cors = CORS(app, resources = {
     r"/api/*": {"origin": "*"}
     })
 
-def get_user_id(user_id):
-    sql = "SELECT user_id FROM User WHERE user_id = ?"
-    rv = app.database.execute(sql, [user_id]).fetchone()
-    return rv[0] if rv else None
+
+def get_user_id(request):
+    token = request.headers.get('Authorization')
+    payload = jwt.decode(token, SECRET_KEY, ALGORITHM)
+
+    return payload['user_id']
+
 
 @app.errorhandler(HTTPException)
 def error_handler(e):
@@ -36,6 +40,7 @@ def error_handler(e):
     response.content_type = 'application/json'
 
     return response
+
 
 @app.route("/api/signup", methods=['POST'])
 def signup():
@@ -62,6 +67,7 @@ def signup():
         "name": new_user['name']
     })
 
+
 @app.route('/api/login', methods=['POST'])
 def login():
     user = request.json
@@ -84,7 +90,6 @@ def login():
             'user_id' : user_id
         }
         token = jwt.encode(payload, SECRET_KEY, ALGORITHM)
-        # print(token)
 
         return jsonify({
             "status": 200,
@@ -101,11 +106,12 @@ def login():
             "message": "Incorrect password"
         })
 
+
 @app.route("/api/summary", methods=['POST'])
 def summary():
     data = {}
     response = {}
-    user_id = "test@naver.com"
+    user_id = get_user_id(request)
 
     if request.method == 'POST':
         req = request.json
@@ -236,7 +242,7 @@ def quiz_return():
 @app.route('/api/scoring', methods=['POST'])
 def scoring():
     req = request.json
-    user_id = 'test@naver.com'
+    user_id = get_user_id(request)
     quizes = req['quiz_list']
     data = {}
     data['correct_list'] = []
@@ -244,7 +250,7 @@ def scoring():
     correct_num = 0
     for quiz in quizes:
         result = app.database.execute(text("""
-        SELECT
+        SELECTd
             quiz_content,
             correct_answer
         FROM Quiz
@@ -300,7 +306,7 @@ def scoring():
 def mypagequiz():
     response = {}
     data = {}
-    user_id = 'test@naver.com'
+    user_id = get_user_id(request)
     results = app.database.execute(text("""
         SELECT
             *
@@ -358,7 +364,7 @@ def mypagequiz():
 def userSummary():
     response = {}
     data = {}
-    user_id = 'test@naver.com'
+    user_id = get_user_id(request)
     summary_r = []
     results = app.database.execute(text("""
         SELECT
