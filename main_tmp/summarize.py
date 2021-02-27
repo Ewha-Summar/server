@@ -48,10 +48,7 @@ def preprocess_sentences(sentences):
 def tokenization(sentences):
     temp = []
     for sentence in sentences:
-        print(sentence)
-        print(okt.nouns(sentence))
         temp_X = okt.morphs(sentence, stem=True)
-        print("3-1")
         temp_X = [word for word in temp_X]
         temp.append(temp_X)
     
@@ -99,17 +96,11 @@ def ranked_sentences(sentences, scores, n):
 
 
 def make_summary(text, count, data):
-    print("2-1")
     data['sentences'] = data['article_text'].apply(sent_tokenize)
-    print("2-2")
     model = Word2Vec(data, sg=1, size=100, window=3, min_count=3, workers=4)
-    print("2-3")
     data['tokenized_data'] = data['sentences'].apply(tokenization)
-    print("2-4")
     data['tokenized_data'] = data['tokenized_data'].apply(preprocess_sentences)
-    print("2-5")
     data['SentenceEmbedding'] = data['tokenized_data'].apply(sentences_to_vectors)
-    print("2-4")
     data['SimMatrix'] = data['SentenceEmbedding'].apply(similarity_matrix)
     data['score'] = data['SimMatrix'].apply(calculate_score)
     data['summary_user'] = data.apply(lambda x:ranked_sentences(x.sentences, x.score, n=count), axis=1)
@@ -166,7 +157,6 @@ def make_blank(data, type):
     np.set_printoptions(threshold=sys.maxsize)
     word_set = data['important_word'][0]
     
-    print("1")
     openApiURL = "http://aiopen.etri.re.kr:8000/WiseNLU"
     openApiURL2 = "http://aiopen.etri.re.kr:8000/WiseNLU_spoken"
     accessKey = "d4a16891-dd45-4883-a873-777a8fda8787"
@@ -262,9 +252,7 @@ def make_quiz(data, type):
 
 def total(text, count, type):
     data = pd.DataFrame({"article_text": [text]})
-    print("2")
     make_summary(text, count, data)
-    print("3")
     question_arr, result_arr = make_quiz(data, type)
-    print("4")
+
     return data.loc[0].summary_user, question_arr, result_arr

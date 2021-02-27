@@ -11,7 +11,7 @@ import jwt
 
 app = Flask(__name__)
 app.config.from_pyfile("config.py")
-#jwt = JWTManager(app)
+jwt = JWTManager(app)
 
 database = create_engine(app.config['DB_URL'], encoding = 'utf-8', max_overflow = 0)
 app.database = database
@@ -79,7 +79,6 @@ def add_claims_to_access_token(user_id, user):
     #return decorated_function
 
 @jwt_required
-#@get_user_id
 def get_user_id():
     token = request.headers.get('Authorization')
     payload = jwt.decode(token, SECRET_KEY, ALGORITHM)
@@ -148,8 +147,8 @@ def login():
         payload = {
             'user_id' : user_id
         }
-        token = jwt.encode(payload, SECRET_KEY, ALGORITHM)
-        #token = create_access_token(user_id, name)
+        #token = jwt.encode(payload, SECRET_KEY, ALGORITHM)
+        token = create_access_token(identity=user_id)
 
         return jsonify({
             "status": 200,
@@ -166,20 +165,23 @@ def login():
             "message": "Incorrect password"
         })
 
+@jwt_required
+def get_token():
+    current_user = get_jwt_identity()
+    return current_user
 
 @app.route("/api/summary", methods=['POST'])
-#@login_required
+@jwt_required
 def summary():
     data = {}
     response = {}
     #decoded = get_user_id(request)
     #user_id = decoded["user_id"]
-    #user_id = get_user_id()
+    #user = get_token()
     user_id = "test@naver.com"
-    token = request.headers.get("Authorization")
-    payload = jwt.decode(token, SECRET_KEY, ALGORITHM)
-    user_id = payload['user_id']
-    print(payload)
+    #print(user)
+    user = get_jwt_identity()
+    print(user)
 
     if request.method == 'POST':
         req = request.json
