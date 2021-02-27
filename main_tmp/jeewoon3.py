@@ -22,7 +22,7 @@ cors = CORS(app, resources = {
 
 
 @jwt_required
-def get_user_id():
+def get_user_id(request):
     token = request.headers.get('Authorization')
     payload = jwt.decode(token, SECRET_KEY, ALGORITHM)
 
@@ -112,10 +112,10 @@ def login():
 def summary():
     data = {}
     response = {}
-
-    token = request.headers.get("Authorization")
-    payload = jwt.decode(token, SECRET_KEY, ALGORITHM)
-    user_id = payload['user_id']
+    user_id = get_user_id(request)
+    #token = request.headers.get("Authorization")
+    #payload = jwt.decode(token, SECRET_KEY, ALGORITHM)
+    #user_id = payload['user_id']
 
     if request.method == 'POST':
         req = request.json
