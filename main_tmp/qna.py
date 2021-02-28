@@ -35,7 +35,7 @@ def ai_qna(passage, question):
     #print("\n\n")
 
     data = json.loads(str(response.data,"utf-8")) # create json object using string
-
+    print(data)
     sentence = data['return_object']['MRCInfo']
     answer = sentence['answer']
     confidence = sentence['confidence']

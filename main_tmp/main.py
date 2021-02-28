@@ -438,8 +438,9 @@ def qna():
         WHERE summary_id = :summary_id
     """), {'summary_id': summary_id}).fetchone()
     bf_summary = result[0]
-    print(bf_summary)
-    print(type(bf_summary))
+
+    #print(bf_summary)
+    #print(type(bf_summary))
     answer, confidence = ai_qna(bf_summary, question)
     data = {}
     data['answer'] = answer
