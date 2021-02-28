@@ -421,7 +421,7 @@ def allSummary():
         "data": data
     })    
     
-@app.route('api/qna')
+@app.route('/api/qna')
 def qna():
     user_id = get_user_id(request)
     summary = request.json
