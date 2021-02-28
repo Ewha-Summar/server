@@ -7,6 +7,7 @@ from werkzeug.exceptions import HTTPException, NotFound
 from utils import SECRET_KEY, ALGORITHM
 from summarize import total, make_summary
 from qna import ai_qna
+from datetime import date
 import bcrypt
 import jwt
 
@@ -145,12 +146,14 @@ def summary():
             :book_title,
             :book_author
         )"""), req)
-
             
             sql = "SELECT LAST_INSERT_ID()"
             summary_id = app.database.execute(sql).fetchone()
 
-            quiz_date = "2021-02-17"
+            #quiz_date = "2021-02-17"
+            today = date.today()
+            quiz_date = today.strftime("%Y-%m-%d")
+
             for i in range(len(question_arr)):
                 req['quiz_type'] = 0
                 req['quiz_content'] = question_arr[i]

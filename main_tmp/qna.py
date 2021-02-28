@@ -32,7 +32,7 @@ def ai_qna(passage, question):
     print(str(response.data,"utf-8"))
     print("\n\n")
 
-    data = json.loads(str(response.data,"utf-8")) # create json object using string
+    data = json.loads(str(response.data)) # create json object using string
 
     sentence = data['return_object']['MRCInfo']
     answer = sentence['answer']
