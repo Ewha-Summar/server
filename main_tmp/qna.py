@@ -14,8 +14,8 @@ def ai_qna(passage, question):
     requestJson = {
         "access_key": accessKey,
         "argument": {
+            "question": question,
             "passage": passage,
-            "question": question
         }
     }
     
@@ -24,13 +24,13 @@ def ai_qna(passage, question):
         "POST",
         openApiURL,
         headers={"Content-Type": "application/json; charset=UTF-8"},
-        body=json.dumps(requestJson.decode('utf-8'))
+        body=json.dumps(requestJson)
     )
 
-    print("[responseCode] " + str(response.status))
-    print("[responBody]")
-    print(str(response.data,"utf-8"))
-    print("\n\n")
+    #print("[responseCode] " + str(response.status))
+    #print("[responBody]")
+    #print(str(response.data,"utf-8"))
+    #print("\n\n")
 
     data = json.loads(str(response.data,"utf-8")) # create json object using string
 
