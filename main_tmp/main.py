@@ -6,6 +6,7 @@ from datetime   import datetime, timedelta
 from werkzeug.exceptions import HTTPException, NotFound
 from utils import SECRET_KEY, ALGORITHM
 from summarize import total, make_summary
+from qna import ai_qna
 import bcrypt
 import jwt
 
@@ -420,6 +421,42 @@ def allSummary():
         "data": data
     })    
     
+@app.route('api/qna')
+def qna():
+    user_id = get_user_id(request)
+    summary = request.json
+    summary_id = summary['summary_id']
+    question = summary['question']
+
+    bf_summary = app.database.execute(text("""
+        SELECT
+            bf_summary
+        FROM Summary
+        WHERE summary_id = :summary_id
+    """), {'summary_id': summary_id}).fetchone()
+
+    [answer, confidence] = ai_qna(bf_summary, question)
+    data = {}
+    data['answer'] = answer
+    data['confidence'] = confidence
+
+    if confidence >= 50:
+        return jsonify({
+            "status": 200,
+            "success": True,
+            "message": "질의응답 성공 (신뢰도 50 이상)",
+            "data": data
+        })
+    else:
+        return jsonify({
+            "status": 200,
+            "success": True,
+            "message": "질의응답 성공 (신뢰도 50 이하)",
+            "data": data
+        })
+
+
+
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port="5000")
