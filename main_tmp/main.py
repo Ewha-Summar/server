@@ -431,13 +431,13 @@ def qna():
     summary_id = summary['summary_id']
     question = summary['question']
 
-    bf_summary = app.database.execute(text("""
+    result = app.database.execute(text("""
         SELECT
             bf_summary
         FROM Summary
         WHERE summary_id = :summary_id
     """), {'summary_id': summary_id}).fetchone()
-
+    bf_summary = result[0]
     print(bf_summary)
     print(type(bf_summary))
     answer, confidence = ai_qna(bf_summary, question)
