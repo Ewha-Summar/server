@@ -446,7 +446,7 @@ def qna():
     data['answer'] = answer
     data['confidence'] = confidence
 
-    if confidence >= 50:
+    if int(confidence) >= 50:
         return jsonify({
             "status": 200,
             "success": True,
