@@ -38,7 +38,7 @@ def ai_qna(passage, question):
     answer = sentence['answer']
     confidence = sentence['confidence']
 
-    return confidence, answer
+    return answer, confidence
 
     '''
     for s in sentence: 
