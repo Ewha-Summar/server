@@ -15,7 +15,7 @@ def ai_qna(passage, question):
         "access_key": accessKey,
         "argument": {
             "passage": passage,
-            "question": question,
+            "question": question
         }
     }
     
@@ -24,7 +24,7 @@ def ai_qna(passage, question):
         "POST",
         openApiURL,
         headers={"Content-Type": "application/json; charset=UTF-8"},
-        body=json.dumps(requestJson)
+        body=json.dumps(requestJson.decode('utf-8'))
     )
 
     print("[responseCode] " + str(response.status))
