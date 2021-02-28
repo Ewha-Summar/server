@@ -5,7 +5,7 @@ import sys
 
 def ai_qna(passage, question):
 
-    openApiURL = "http://aiopen.etri.re.kr:8000/WiseNLU" 
+    openApiURL = "http://aiopen.etri.re.kr:8000/MRCServlet" 
     openApiURL2 = "http://aiopen.etri.re.kr:8000/WiseNLU_spoken"
     accessKey = "d4a16891-dd45-4883-a873-777a8fda8787"
 
