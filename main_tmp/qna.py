@@ -14,7 +14,7 @@ def ai_qna(passage, question):
     requestJson = {
         "access_key": accessKey,
         "argument": {
-            "question": question,
+            "text": question,
             "passage": passage
         }
     }
