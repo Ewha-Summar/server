@@ -18,7 +18,8 @@ def ai_qna(passage, question):
             "passage": passage,
         }
     }
-    
+    print(requestJson)
+
     http = urllib3.PoolManager()
     response = http.request(
         "POST",
