@@ -113,6 +113,12 @@ def summary():
     data = {}
     response = {}
     user_id = get_user_id(request)
+    if user_id is None:
+        return jsonify({
+            "status": 401,
+            "success": False,
+            "message": "로그인이 필요합니다"
+        })
 
     if request.method == 'POST':
         req = request.json
@@ -148,30 +154,6 @@ def summary():
 
             sql = "SELECT LAST_INSERT_ID()"
             summary_id = app.database.execute(sql).fetchone()
-            #req['summary_id'] = summary_id
-            '''
-            try:
-                app.database.execute(text("""
-            UPDATE Summary
-            SET
-                book_author= :book_author
-            WHERE summary_id = :summary_id
-            """), req)
-            except:
-                pass
-
-            #try:
-            app.database.execute(text("""
-        UPDATE Summary
-        SET
-            book_title= :book_title
-        WHERE summary_id = :summary_id
-        """), req)
-            print("******")
-            #except :
-                #pass
-        '''
-        
 
             quiz_date = dt.datetime.now()
 
@@ -242,6 +224,22 @@ def quiz_return():
     data = {}
     response = {}
     data['quiz_list'] = []
+
+    id = app.database.execute(text("""
+        SELECT
+            user_id
+        FROM Quiz
+        WHERE summary_id = :summary_id
+    """), {'summary_id': summary_id}).fetchall()
+
+    user_id = get_user_id(request)
+    if user_id != id:
+        return jsonify({
+            "status": 401,
+            "success": False,
+            "message": "권한이 없습니다"
+        })
+
     results = app.database.execute(text("""
         SELECT
             quiz_id,
@@ -269,6 +267,13 @@ def quiz_return():
 def scoring():
     req = request.json
     user_id = get_user_id(request)
+    if user_id is None:
+        return jsonify({
+            "status": 401,
+            "success": False,
+            "message": "로그인이 필요합니다"
+        })
+
     quizes = req['quiz_list']
     data = {}
     data['correct_list'] = []
@@ -333,6 +338,13 @@ def mypagequiz():
     response = {}
     data = {}
     user_id = get_user_id(request)
+    if user_id is None:
+        return jsonify({
+            "status": 401,
+            "success": False,
+            "message": "로그인이 필요합니다"
+        })
+
     results = app.database.execute(text("""
         SELECT
             *
@@ -391,6 +403,13 @@ def userSummary():
     response = {}
     data = {}
     user_id = get_user_id(request)
+    if user_id is None:
+        return jsonify({
+            "status": 401,
+            "success": False,
+            "message": "로그인이 필요합니다"
+        })
+
     summary_r = []
     results = app.database.execute(text("""
         SELECT
@@ -449,6 +468,13 @@ def allSummary():
 @app.route('/api/qna', methods=['GET'])
 def qna():
     user_id = get_user_id(request)
+    if user_id is None:
+        return jsonify({
+            "status": 401,
+            "success": False,
+            "message": "로그인이 필요합니다"
+        })
+
     summary = request.json
     summary_id = summary['summary_id']
     question = summary['question']
