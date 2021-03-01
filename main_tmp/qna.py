@@ -45,7 +45,8 @@ def ai_qna(passage, question):
     final_confidence = 0
     final_answer = ""
     for idx2 in range(len(confidence)):
-        if int(float(final_confidence)) < int(float(confidence[idx2])):
+        print("&&&")
+        if float(final_confidence) < float(confidence[idx2]):
             print("***")
             final_confidence = confidence[idx2]
             final_answer = answer[idx2]
