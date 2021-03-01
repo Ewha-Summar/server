@@ -59,7 +59,7 @@ def signup():
             :password,
             :name
         )
-    """), new_user)
+    """), new_user)#유저 정보 db삽입
 
     return jsonify({
         "status": 200,
@@ -75,22 +75,29 @@ def login():
     user_id = user['user_id']
     password = user['password']
 
-    row = app.database.execute(text("""
+    result = app.database.execute(text("""
         SELECT
             user_id,
             password,
             name
         FROM User
         WHERE user_id = :user_id
-    """), {'user_id' : user_id}).fetchone()
+    """), {'user_id' : user_id}).fetchone()#user_id에 해당하는 정보 불러오기
     
-    if row and bcrypt.checkpw(password.encode('utf-8'), row['password'].encode('utf-8')):
-        user_id = row['user_id']
-        name = row['name']
+    if result is None:
+        return jsonify({
+            "status": 401,
+            "success": False,
+            "message": "아이디가 없습니다"
+        })#일치하는 아이디가 없음
+
+    if result and bcrypt.checkpw(password.encode('utf-8'), result['password'].encode('utf-8')):
+        user_id = result['user_id']
+        name = result['name']
         payload = {
             'user_id' : user_id
         }
-        token = jwt.encode(payload, SECRET_KEY, ALGORITHM)
+        token = jwt.encode(payload, SECRET_KEY, ALGORITHM)#토큰생성
 
         return jsonify({
             "status": 200,
@@ -122,14 +129,16 @@ def summary():
 
     if request.method == 'POST':
         req = request.json
-        bf_summary = req['bf_summary']
+
         count = req['count']
+        bf_summary = req['bf_summary']
         input_type = req['input_type']
-        summary_user, question_arr, result_arr = total(
-            bf_summary, count, input_type)
+        summary_user, question_arr, result_arr = total(bf_summary, count, input_type)
+
         req['af_summary'] = summary_user
         req['user_id'] = user_id
 
+        #result_arr : 퀴즈에 대한 정답 배열
         if result_arr is not None:
             app.database.execute(text("""
         INSERT INTO Summary(
@@ -150,13 +159,12 @@ def summary():
             :input_type,
             :book_title,
             :book_author
-        )"""), req)
+        )"""), req)#summary 정보 db 삽입
 
             sql = "SELECT LAST_INSERT_ID()"
-            summary_id = app.database.execute(sql).fetchone()
+            summary_id = app.database.execute(sql).fetchone()#삽입한 summary의 summary_id
 
             quiz_date = dt.datetime.now()
-
 
             for i in range(len(question_arr)):
                 req['quiz_type'] = 0
@@ -182,47 +190,54 @@ def summary():
                 :summary_id,
                 :book_title,
                 :correct_answer
-            )"""), req)
+            )"""), req)#퀴즈 정보 db 삽입
 
-            response['status'] = 200
-            response['success'] = True
-            response['message'] = "요약 및 퀴즈를 생성합니다"
             data['content'] = summary_user
             data['summary_id'] = summary_id[0]
-            response['data'] = data
-            return jsonify(response)
+
+            return jsonify({
+                "status": 200,
+                "success": True,
+                "message": "요약 및 퀴즈를 생성합니다",
+                "data": data
+            })
         else:
-            abort(question_arr)
+            abort(question_arr)#result_arr 가 None인 경우, question_arr에 response code가 저장되어 있음
 
 
 @app.route('/api/summary', methods=['GET'])
 def summary_return():
     summaryid = request.args.get('summary_id')
     data = {}
+    data['summary_id'] = summaryid
     data['content'] = app.database.execute(text("""
         SELECT
             af_summary
         FROM Summary
         WHERE summary_id = :summaryid
-    """), {'summaryid': summaryid}).fetchone()[0]
+    """), {'summaryid': summaryid}).fetchone()[0]#저장된 summary
 
-    data['summary_id'] = summaryid
+    if data['content'] is None:
+        return jsonify({
+            "status": 400,
+            "success": False,
+            "message": "존재하지 않는 요약입니다"
+        })
 
-    response = {}
-    response['status'] = 200
-    response['success'] = True
-    response['message'] = "요약을 반환합니다"
-    response['data'] = data
-
-    return jsonify(response)
+    return jsonify({
+        "status": 200,
+        "success": True,
+        "message": "요약을 반환합니다",
+        "data": data
+    })
 
 
 @app.route('/api/quiz', methods=['GET'])
 def quiz_return():
     quiz_type = request.args.get('quiz_type')
     summary_id = request.args.get('summary_id')
+
     data = {}
-    response = {}
     data['quiz_list'] = []
 
     id = app.database.execute(text("""
@@ -230,16 +245,17 @@ def quiz_return():
             user_id
         FROM Quiz
         WHERE summary_id = :summary_id
-    """), {'summary_id': summary_id}).fetchall()
+    """), {'summary_id': summary_id}).fetchall()#요청된 summary의 user_id
 
-    user_id = get_user_id(request)
+    user_id = get_user_id(request)#요청자의 user_id
+
     '''
     if user_id != id:
         return jsonify({
             "status": 401,
             "success": False,
             "message": "권한이 없습니다"
-        })
+        })#두 아이디가 일치하지 않을 경우 권한 없음
     '''
 
     results = app.database.execute(text("""
@@ -249,20 +265,23 @@ def quiz_return():
         FROM Quiz
         WHERE quiz_type = :quiz_type 
         and summary_id = :summary_id
-    """), {'quiz_type': quiz_type, 'summary_id': summary_id}).fetchall()
+    """), {'quiz_type': quiz_type, 'summary_id': summary_id}).fetchall()#요청 summary에 해당하는 quiz list
     
     for result in results:
         quiz = {}
         quiz['quiz_id'] = result[0]
         quiz['content'] = result[1]
         data['quiz_list'].append(quiz)
+        #quiz list를 json 배열로 변환
 
-    response['status'] = 200
-    response['success'] = True
-    response['message'] = "퀴즈를 가져옵니다"
-    response['data'] = data
 
-    return jsonify(response)
+    return jsonify({
+        "status": 200,
+        "success": True,
+        "message": "퀴즈를 가져옵니다",
+        "data": data
+    })
+
 
 
 @app.route('/api/scoring', methods=['POST'])
@@ -277,10 +296,11 @@ def scoring():
         })
 
     quizes = req['quiz_list']
+
     data = {}
     data['correct_list'] = []
-    response = {}
-    correct_num = 0
+
+    correct_num = 0#정답 수
     for quiz in quizes:
         result = app.database.execute(text("""
         SELECT
@@ -288,8 +308,9 @@ def scoring():
             correct_answer
         FROM Quiz
         WHERE quiz_id = :quiz_id 
-        """), quiz).fetchone()
+        """), quiz).fetchone()#퀴즈 내용과 정답
 
+        #채점
         q = {}
         q['quiz_id'] = quiz['quiz_id']
         q['content'] = result[0]
@@ -301,15 +322,18 @@ def scoring():
             q['correct'] = False
             quiz['correct'] = False
 
+
         app.database.execute(text("""
         UPDATE Quiz
         SET
             my_answer = :my_answer,
             correct = :correct
         WHERE quiz_id = :quiz_id
-        """), quiz)        
-        data['correct_list'].append(q)
-    data['score'] = correct_num/len(quizes)
+        """), quiz)
+        #quiz의 correct update
+        data['correct_list'].append(q)#return data에 추가
+
+    data['score'] = str(correct_num) + '/' + str(len(quizes))
 
     scoreInfo = {}
     scoreInfo['user_id'] = user_id
@@ -326,18 +350,17 @@ def scoring():
         :summary_id,
         :score
     )
-    """), scoreInfo)
+    """), scoreInfo)#score db에 삽입
 
-    response['status'] = 200
-    response['success'] = True
-    response['message'] = "퀴즈를 채점합니다"
-    response['data'] = data
-
-    return jsonify(response)
+    return jsonify({
+        "status": 200,
+        "success": True,
+        "message": "퀴즈를 채점합니다",
+        "data": data
+    })
 
 @app.route('/api/mypagequiz')
 def mypagequiz():
-    response = {}
     data = {}
     user_id = get_user_id(request)
     if user_id is None:
@@ -352,12 +375,12 @@ def mypagequiz():
             *
         FROM Quiz
         WHERE user_id = :user_id 
-    """), {'user_id': user_id}).fetchall()
+    """), {'user_id': user_id}).fetchall()#유저의 모든 퀴즈를 가져옴
 
     quiz_list = []
     quizes = []
-    last_index = results[0][5]
-    last_quiz_id = results[-1][0]
+    last_index = results[0][5]#마지막으로 처리된 퀴즈의 summary_id
+    last_quiz_id = results[-1][0]#불러온 마지막 quiz
     for result in results:
         quiz = {}
         quiz['quiz_id'] = result[0]
@@ -369,6 +392,7 @@ def mypagequiz():
         quiz['my_answer'] = result[7]
         quiz['correct_answer'] = result[8]
         quiz['correct'] = result[9]
+        #정보 저장
         if quiz['quiz_id'] == last_quiz_id:
             quizes.append(quiz)
             dt = {}
@@ -378,7 +402,7 @@ def mypagequiz():
             dt['summary_id'] = result[5]
             quiz_list.append(dt)
             quizes.clear()
-
+            #마지막 퀴즈인 경우
         elif last_index != result[5]:
             dt = {}
             dt['quiz'] = []
@@ -388,21 +412,22 @@ def mypagequiz():
             quiz_list.append(dt)
             quizes.clear()
             last_index = result[5]
+            #summary_id가 바뀐 경우, 새로운 summary에 대한 quiz
+
         if quiz['quiz_id'] != last_quiz_id: quizes.append(quiz)
 
     data['quiz_list'] = quiz_list
     data['user_id'] = user_id
     
-    response['status'] = '200'
-    response['success'] = True
-    response['message'] = "사용자의 퀴즈를 가져옵니다"
-    response['data'] = data
-
-    return jsonify(response)
+    return jsonify({
+        "status": 200,
+        "success": True,
+        "message": "사용자의 퀴즈를 가져옵니다",
+        "data": data
+    })
 
 @app.route('/api/userSummary')
 def userSummary():
-    response = {}
     data = {}
     user_id = get_user_id(request)
     if user_id is None:
@@ -412,14 +437,15 @@ def userSummary():
             "message": "로그인이 필요합니다"
         })
 
-    summary_r = []
+    summary_arr = []
     results = app.database.execute(text("""
         SELECT
             *
         FROM Summary
         WHERE user_id = :user_id 
-    """), {'user_id': user_id}).fetchall()
+    """), {'user_id': user_id}).fetchall()#user_id에 일치하는 모든 summary
     data['user_id'] = user_id
+
     for result in results:
         summary = {}
         summary['summary_id'] = result[0]
@@ -427,9 +453,9 @@ def userSummary():
         summary['content'] = result[4]
         summary['book_title'] = result[7]
         summary['book_author'] = result[8]
-        summary_r.append(summary)
+        summary_arr.append(summary)
 
-    data['summary_result'] = summary_r
+    data['summary_result'] = summary_arr
     
     return jsonify({
         "status": 200,
@@ -441,14 +467,13 @@ def userSummary():
 
 @app.route('/api/allSummary')
 def allSummary():
-    response = {}
     data = {}
     summary_arr = []
     results = app.database.execute(text("""
         SELECT
             *
         FROM Summary
-    """)).fetchall()
+    """)).fetchall()#모든 summary
     for result in results:
         summary = {}
         summary['summary_id'] = result[0]
