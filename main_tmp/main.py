@@ -310,13 +310,14 @@ def scoring():
         FROM Quiz
         WHERE quiz_id = :quiz_id 
         """), quiz).fetchone()#퀴즈 내용과 정답
+        '''
         if result[2] is not None:
             return jsonify({
                 "status": 400,
                 "success": False,
                 "message": "이미 제출한 퀴즈입니다"
             })            
-
+        '''
         #채점
         q = {}
         q['quiz_id'] = quiz['quiz_id']
