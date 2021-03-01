@@ -124,6 +124,9 @@ def summary():
         req['af_summary'] = summary_user
         req['user_id'] = user_id
         
+        if req['book_author'] is None:
+            print("***************")
+
         if result_arr is not None:
             app.database.execute(text("""
         INSERT INTO Summary(
