@@ -49,4 +49,6 @@ def ai_qna(passage, question):
             final_confidence = confidence[idx2]
             final_answer = answer[idx2]
     
+    print(final_confidence)
+    print(final_answer)
     return final_answer, final_confidence
