@@ -116,9 +116,10 @@ def summary():
 
     if request.method == 'POST':
         req = request.json
-        bf_summary = req['text']
+        bf_summary = req['bf_summary']
         count = req['count']
         input_type = req['input_type']
+        #summary_title = req['summary_title']
         summary_user, question_arr, result_arr = total(
             bf_summary, count, input_type)
         req['af_summary'] = summary_user
@@ -149,9 +150,6 @@ def summary():
             sql = "SELECT LAST_INSERT_ID()"
             summary_id = app.database.execute(sql).fetchone()
 
-            #quiz_date = "2021-02-17"
-            #today = date.today()
-            #quiz_date = today.strftime("%Y-%m-%d")
             quiz_date = dt.datetime.now()
 
 

@@ -1,6 +1,6 @@
 User authentication
 1. 회원가입
-   - url "/api/register"
+   - url "/api/signup"
    - method
       - post
    - description
