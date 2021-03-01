@@ -119,7 +119,6 @@ def summary():
         bf_summary = req['bf_summary']
         count = req['count']
         input_type = req['input_type']
-        #summary_title = req['summary_title']
         summary_user, question_arr, result_arr = total(
             bf_summary, count, input_type)
         req['af_summary'] = summary_user
@@ -139,7 +138,7 @@ def summary():
         ) VALUES (
             :user_id,
             :summary_title,
-            :text,
+            :bf_summary,
             :af_summary,
             :count,
             :input_type,

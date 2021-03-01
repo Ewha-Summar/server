@@ -110,7 +110,7 @@ Data handling
     - header
         - jwt
    - form parameter
-      - text
+      - bf_summary
       - summary_title
       - book_title
       - book_author
