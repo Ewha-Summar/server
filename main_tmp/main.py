@@ -233,12 +233,14 @@ def quiz_return():
     """), {'summary_id': summary_id}).fetchall()
 
     user_id = get_user_id(request)
+    '''
     if user_id != id:
         return jsonify({
             "status": 401,
             "success": False,
             "message": "권한이 없습니다"
         })
+    '''
 
     results = app.database.execute(text("""
         SELECT
