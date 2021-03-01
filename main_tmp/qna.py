@@ -45,6 +45,7 @@ def ai_qna(passage, question):
         if float(final_confidence) < float(confidence[idx2]):
             final_confidence = confidence[idx2]
             final_answer = answer[idx2]
-    final_confidence = round(float(final_confidence), 2)*100
-    
+    print(final_confidence)
+    final_confidence = round(float(final_confidence), 4)*100
+
     return final_answer, final_confidence

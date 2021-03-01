@@ -23,9 +23,7 @@ cors = CORS(app, resources = {
 
 
 def get_user_id(request):
-    print(request)
     token = request.headers.get('Authorization')
-    print(token)
     payload = jwt.decode(token, SECRET_KEY, ALGORITHM)
 
     return payload['user_id']
@@ -133,7 +131,7 @@ def summary():
         req = request.json
 
         count = req['count']
-        bf_summary = req['bf_summary']
+        bf_summary = req['text']
         input_type = req['input_type']
         summary_user, question_arr, result_arr = total(bf_summary, count, input_type)
 
@@ -155,7 +153,7 @@ def summary():
         ) VALUES (
             :user_id,
             :summary_title,
-            :bf_summary,
+            :text,
             :af_summary,
             :count,
             :input_type,
