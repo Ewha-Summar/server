@@ -151,8 +151,10 @@ def summary():
             summary_id = app.database.execute(sql).fetchone()
 
             #quiz_date = "2021-02-17"
-            today = date.today()
-            quiz_date = today.strftime("%Y-%m-%d")
+            #today = date.today()
+            #quiz_date = today.strftime("%Y-%m-%d")
+            quiz_date = dt.datetime.now()
+
 
             for i in range(len(question_arr)):
                 req['quiz_type'] = 0
@@ -327,7 +329,7 @@ def mypagequiz():
         quiz['quiz_id'] = result[0]
         quiz['quiz_type'] = result[1]
         quiz['quiz_content'] = result[2]
-        #quiz['quiz_date'] = result[3]
+        quiz['quiz_date'] = result[3]
         quiz['summary_id'] = result[5]
         quiz['book_title'] = result[6]
         quiz['my_answer'] = result[7]
