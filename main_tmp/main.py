@@ -281,7 +281,7 @@ def scoring():
     correct_num = 0
     for quiz in quizes:
         result = app.database.execute(text("""
-        SELECTd
+        SELECT
             quiz_content,
             correct_answer
         FROM Quiz
