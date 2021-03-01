@@ -519,22 +519,12 @@ def qna():
     data['answer'] = answer
     data['confidence'] = confidence
 
-    if int(float(confidence)) >= 0.5:
-        return jsonify({
+    return jsonify({
             "status": 200,
             "success": True,
-            "message": "질의응답 성공 (신뢰도 50 이상)",
+            "message": "질의응답 성공",
             "data": data
         })
-    else:
-        return jsonify({
-            "status": 200,
-            "success": True,
-            "message": "질의응답 성공 (신뢰도 50 이하)",
-            "data": data
-        })
-
-
 
 
 if __name__ == "__main__":
