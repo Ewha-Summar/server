@@ -312,10 +312,9 @@ def scoring():
         """), quiz).fetchone()#퀴즈 내용과 정답
         if result[2] is not None:
             return jsonify({
-                "status": 200,
-                "success": True,
-                "message": "퀴즈를 채점합니다",
-                "data": data
+                "status": 400,
+                "success": False,
+                "message": "이미 제출한 퀴즈입니다"
             })            
 
         #채점
