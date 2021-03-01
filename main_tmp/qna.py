@@ -8,7 +8,7 @@ def ai_qna(passage, question):
     answer = {}
     confidence = {}
     size = len(passage)//1000 # 전체 텍스트를 1000자로 나눴을 때 chunk 개수
-    
+
     for idx in range(0, size + 1):
         if idx != size:
             split_passage = passage[idx*1000:(idx+1)*1000]
@@ -45,5 +45,6 @@ def ai_qna(passage, question):
         if float(final_confidence) < float(confidence[idx2]):
             final_confidence = confidence[idx2]
             final_answer = answer[idx2]
+    final_confidence = round(float(final_confidence), 2)*100
     
     return final_answer, final_confidence
