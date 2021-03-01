@@ -35,22 +35,15 @@ def ai_qna(passage, question):
         )
 
         data = json.loads(str(response.data,"utf-8"))
-        #print(data)
         sentence = data['return_object']['MRCInfo']
         answer[idx] = sentence['answer']
         confidence[idx] = sentence['confidence']
 
-    print(answer)
-    print(confidence)
     final_confidence = 0
     final_answer = ""
     for idx2 in range(len(confidence)):
-        print("&&&")
         if float(final_confidence) < float(confidence[idx2]):
-            print("***")
             final_confidence = confidence[idx2]
             final_answer = answer[idx2]
     
-    print(final_confidence)
-    print(final_answer)
     return final_answer, final_confidence
