@@ -354,7 +354,7 @@ Data handling
         - ai에 질문하기
     - header
         - jwt
-    - form parameter
+    - query parameter
         - summary_id
         - question
    - return type

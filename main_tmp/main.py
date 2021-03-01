@@ -511,11 +511,8 @@ def qna():
             "message": "로그인이 필요합니다"
         })
 
-    summary = request.json
     summary_id = request.args.get('summary_id')
     question = request.args.get('question')
-    #summary_id = summary['summary_id']
-    #question = summary['question']
 
     result = app.database.execute(text("""
         SELECT
