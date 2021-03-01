@@ -126,7 +126,8 @@ def summary():
         
         #if req['book_author'] is None:
             #print("***************")
-        print(req["book_author"])
+        #print(req["book_author"])
+
 
         if result_arr is not None:
             app.database.execute(text("""
@@ -136,19 +137,31 @@ def summary():
             bf_summary,
             af_summary,
             count,
-            input_type,
-            book_title,
-            book_author
+            input_type
         ) VALUES (
             :user_id,
             :summary_title,
             :bf_summary,
             :af_summary,
             :count,
-            :input_type,
-            :book_title,
-            :book_author
+            :input_type
         )"""), req)
+
+            sql = "SELECT LAST_INSERT_ID()"
+            summary_id = app.database.execute(sql).fetchone()
+            req['summary_id'] = summary_id
+
+            try:
+                app.database.execute(text("""
+            UPDATE Summary
+            SET
+                book_author= :book_author
+            WHERE summary_id = :summary_id
+            """), req)
+            except:
+                pass
+
+        
             
             sql = "SELECT LAST_INSERT_ID()"
             summary_id = app.database.execute(sql).fetchone()
