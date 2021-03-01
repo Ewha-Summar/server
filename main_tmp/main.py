@@ -124,8 +124,9 @@ def summary():
         req['af_summary'] = summary_user
         req['user_id'] = user_id
         
-        if req['book_author'] is None:
-            print("***************")
+        #if req['book_author'] is None:
+            #print("***************")
+        print(req["book_author"])
 
         if result_arr is not None:
             app.database.execute(text("""
