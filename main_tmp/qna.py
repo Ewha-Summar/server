@@ -11,7 +11,7 @@ def ai_qna(passage, question):
     size = len(passage)//1000 # 전체 텍스트를 1000자로 나눴을 때 chunk 개수
     for idx in range(0, size + 1):
         if idx != size:
-            split_passage = passage[idx*1000:(idx+1)*1000)]
+            split_passage = passage[idx*1000:(idx+1)*1000]
         else:
             split_passage = passage[idx*1000:]
             
