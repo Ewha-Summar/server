@@ -161,6 +161,16 @@ def summary():
             except:
                 pass
 
+            try:
+                app.database.execute(text("""
+            UPDATE Summary
+            SET
+                book_title= :book_title
+            WHERE summary_id = :summary_id
+            """), req)
+            except:
+                pass
+
         
             
             sql = "SELECT LAST_INSERT_ID()"
