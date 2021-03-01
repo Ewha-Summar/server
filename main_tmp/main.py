@@ -169,8 +169,8 @@ def summary():
             WHERE summary_id = :summary_id
             """), req)
                 print("******")
-            except:
-                pass
+            #except :
+                #pass
 
         
             
