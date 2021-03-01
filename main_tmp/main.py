@@ -23,9 +23,7 @@ cors = CORS(app, resources = {
 
 
 def get_user_id(request):
-    print(request)
     token = request.headers.get('Authorization')
-    print(token)
     payload = jwt.decode(token, SECRET_KEY, ALGORITHM)
 
     return payload['user_id']
