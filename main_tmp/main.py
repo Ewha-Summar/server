@@ -305,10 +305,18 @@ def scoring():
         result = app.database.execute(text("""
         SELECT
             quiz_content,
-            correct_answer
+            correct_answer,
+            correct
         FROM Quiz
         WHERE quiz_id = :quiz_id 
         """), quiz).fetchone()#퀴즈 내용과 정답
+        if result[2] is not None:
+            return jsonify({
+                "status": 200,
+                "success": True,
+                "message": "퀴즈를 채점합니다",
+                "data": data
+            })            
 
         #채점
         q = {}
