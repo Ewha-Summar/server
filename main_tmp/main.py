@@ -1,5 +1,4 @@
 from flask      import Flask, request, jsonify, current_app, g, flash, json
-from flask_jwt_extended import *
 from flask_cors import CORS
 from sqlalchemy import create_engine, text
 from datetime   import datetime, timedelta
@@ -7,7 +6,7 @@ from werkzeug.exceptions import HTTPException, NotFound
 from utils import SECRET_KEY, ALGORITHM
 from summarize import total, make_summary
 from qna import ai_qna
-from datetime import date
+import datetime as dt
 import bcrypt
 import jwt
 
