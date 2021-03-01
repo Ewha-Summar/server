@@ -168,6 +168,7 @@ def summary():
                 book_title= :book_title
             WHERE summary_id = :summary_id
             """), req)
+                print("******")
             except:
                 pass
 
