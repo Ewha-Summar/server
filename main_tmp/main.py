@@ -391,31 +391,61 @@ def mypagequiz():
     for result in results:
         quiz = {}
         quiz['quiz_id'] = result[0]
-        quiz['quiz_type'] = result[1]
         quiz['quiz_content'] = result[2]
-        quiz['quiz_date'] = result[3]
-        quiz['summary_id'] = result[5]
-        quiz['book_title'] = result[6]
         quiz['my_answer'] = result[7]
         quiz['correct_answer'] = result[8]
         quiz['correct'] = result[9]
+        if result[9] == 0:
+            quiz['correct'] = 'X'
+        elif result[9] == 1:
+            quiz['correct'] = 'O'
+
         #정보 저장
+
         if quiz['quiz_id'] == last_quiz_id:
             quizes.append(quiz)
             dt = {}
             dt['quiz'] = []
             for i in quizes:
                 dt['quiz'].append(i)
+            dt['quiz_type'] = result[1]
+            dt['quiz_date'] = result[3]
             dt['summary_id'] = result[5]
+            dt['book_title'] = result[6]
+
+            score = app.database.execute(text("""
+            SELECT
+                score
+            FROM Score
+            WHERE summary_id = :summary_id 
+            """), dt).fetchone()#스코어
+            if score is None:
+                dt['score'] = "미제출"
+            else:
+                dt['score'] = score[0]          
             quiz_list.append(dt)
             quizes.clear()
             #마지막 퀴즈인 경우
+    
         elif last_index != result[5]:
             dt = {}
             dt['quiz'] = []
             for i in quizes:
                 dt['quiz'].append(i)
             dt['summary_id'] = last_index
+            dt['quiz_type'] = result[1]
+            dt['quiz_date'] = result[3]
+            dt['book_title'] = result[6]
+            score = app.database.execute(text("""
+            SELECT
+                score
+            FROM Score
+            WHERE summary_id = :summary_id 
+            """), dt).fetchone()#스코어
+            if score is None:
+                dt['score'] = "미제출"
+            else:
+                dt['score'] = score[0]
             quiz_list.append(dt)
             quizes.clear()
             last_index = result[5]
