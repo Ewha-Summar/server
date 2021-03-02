@@ -599,3 +599,59 @@ Data handling
             "success" : False,
             "message" : "Bad Gateway"
         }
+
+
+9.  모든 요약 보여주기
+    - url "/api/allSummary"
+    - method
+        - get
+    - description
+        - 모든 요약을 보여줍니다
+    - header
+        - jwt
+    - return type
+        - success {
+            "status" : 200,
+            "success" : True,
+            "message" : "모든 요약 반환",
+            "data" : {
+                "summary": [
+                    {
+                        "summary_id": 11,
+                        "summary_title": "title",
+                        "book_title": "testbook",
+                        "book_author": "author",
+                        "content": "summary",
+                        "user_name": "username"
+                    },
+                    {
+                        "summary_id": 12,
+                        "summary_title": "title2",
+                        "book_title": "testbook2",
+                        "book_author": "author2",
+                        "content": "summary2",
+                        "user_name": "username2"
+                    }
+                ]
+            }             
+        }
+        - failure {
+            "status" : 400,
+            "success" : False,
+            "message" : "형식 오류"
+        }
+        - failure {
+            "status" : 404,
+            "success" : False,
+            "message" : "Not Found"
+        }
+        - failure {
+            "status" : 500,
+            "success" : False,
+            "message" : "Internal Server Error"
+        }
+        - failure {
+            "status" : 502,
+            "success" : False,
+            "message" : "Bad Gateway"
+        }
