@@ -515,11 +515,19 @@ def allSummary():
     for result in results:
         summary = {}
         summary['summary_id'] = result[0]
-        summary['user_id'] = result[1]
         summary['summary_title'] = result[2]
         summary['content'] = result[4]
         summary['book_title'] = result[7]
         summary['book_author'] = result[8]
+
+        user_id = result[1]
+        user_name = app.database.execute(text("""
+            SELECT
+                name
+            FROM User
+            WHERE user_id = :user_id 
+        """), {'user_id': user_id}).fetchone()#user_id에 일치하는 모든 summary
+        summary['user_name'] = user_name[0]
         summary_arr.append(summary)
     data['summary'] = summary_arr
 
@@ -528,7 +536,7 @@ def allSummary():
         "success": True,
         "message": "모든 요약 반환",
         "data": data
-    })    
+    })     
     
 @app.route('/api/qna', methods=['GET'])
 def qna():
