@@ -236,7 +236,7 @@ def make_blank(data, type, keyword):
         
 
 
-def make_quiz(data, type):
+def make_quiz(data, type, keyword):
     data['summary_sentences'] = data['summary_7'].apply(sent_tokenize)
     data['tokenized_data_for_word'] = data['summary_sentences'].apply(
         tokenization)
