@@ -133,7 +133,8 @@ def summary():
         count = req['count']
         bf_summary = req['text']
         input_type = req['input_type']
-        summary_user, question_arr, result_arr = total(bf_summary, count, input_type)
+        keyword = req['keyword']
+        summary_user, question_arr, result_arr = total(bf_summary, count, input_type, keyword)
 
         req['af_summary'] = summary_user
         req['user_id'] = user_id
