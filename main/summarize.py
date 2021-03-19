@@ -229,6 +229,7 @@ def make_blank(data, type, keyword):
                 if question_tmp != question:
                     question_arr.append(question_tmp)
                     result_arr.append(word)
+                    blank_arr.remove(word)
                     break
         return question_arr, result_arr     
     else: 
