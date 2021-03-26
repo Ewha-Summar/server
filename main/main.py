@@ -285,9 +285,9 @@ def quiz_return():
 
 
 
-@app.route('/api/mypagequiz')
-def mypagequiz():
-    data = {}
+@app.route('/api/scoring', methods=['POST'])
+def scoring():
+    req = request.json
     user_id = get_user_id(request)
     if user_id is None:
         return jsonify({
@@ -296,89 +296,80 @@ def mypagequiz():
             "message": "로그인이 필요합니다"
         })
 
-    results = app.database.execute(text("""
+    quizes = req['quiz_list']
+
+    data = {}
+    data['correct_list'] = []
+
+    correct_num = 0#정답 수
+    for quiz in quizes:
+        result = app.database.execute(text("""
         SELECT
-            *
+            quiz_content,
+            correct_answer,
+            correct,
+            quiz_type
         FROM Quiz
-        WHERE user_id = :user_id 
-    """), {'user_id': user_id}).fetchall()#유저의 모든 퀴즈를 가져옴
+        WHERE quiz_id = :quiz_id 
+        """), quiz).fetchone()#퀴즈 내용과 정답
+        req['quiz_type'] = result['quiz_type']
+        '''
+        if result[2] is not None:
+            return jsonify({
+                "status": 400,
+                "success": False,
+                "message": "이미 제출한 퀴즈입니다"
+            })            
+        '''
+        #채점
+        q = {}
+        q['quiz_id'] = quiz['quiz_id']
+        q['content'] = result[0]
+        if quiz['my_answer'] == result[1]:
+            q['correct'] = True
+            quiz['correct'] = True
+            correct_num += 1
+        else:
+            q['correct'] = False
+            quiz['correct'] = False
 
-    quiz_list = []
-    quizes = []
-    last_index = results[0][5]#마지막으로 처리된 퀴즈의 summary_id
-    last_quiz_id = results[-1][0]#불러온 마지막 quiz
-    for result in results:
-        quiz = {}
-        quiz['quiz_id'] = result[0]
-        quiz['quiz_content'] = result[2]
-        quiz['my_answer'] = result[7]
-        quiz['correct_answer'] = result[8]
-        quiz['correct'] = result[9]
-        if result[9] == 0:
-            quiz['correct'] = 'X'
-        elif result[9] == 1:
-            quiz['correct'] = 'O'
 
-        #정보 저장
+        app.database.execute(text("""
+        UPDATE Quiz
+        SET
+            my_answer = :my_answer,
+            correct = :correct
+        WHERE quiz_id = :quiz_id
+        """), quiz)
+        #quiz의 correct update
+        data['correct_list'].append(q)#return data에 추가
 
-        if quiz['quiz_id'] == last_quiz_id:
-            quizes.append(quiz)
-            dt = {}
-            dt['quiz'] = []
-            for i in quizes:
-                dt['quiz'].append(i)
-            dt['quiz_type'] = result[1]
-            dt['quiz_date'] = result[3]
-            dt['summary_id'] = result[5]
-            dt['book_title'] = result[6]
+    data['score'] = str(correct_num) + '/' + str(len(quizes))
 
-            score = app.database.execute(text("""
-            SELECT
-                score
-            FROM Score
-            WHERE summary_id = :summary_id 
-            """), dt).fetchone()#스코어
-            if score is None:
-                dt['score'] = "미제출"
-            else:
-                dt['score'] = score[0]          
-            quiz_list.append(dt)
-            quizes.clear()
-            #마지막 퀴즈인 경우
-    
-        elif last_index != result[5]:
-            dt = {}
-            dt['quiz'] = []
-            for i in quizes:
-                dt['quiz'].append(i)
-            dt['summary_id'] = last_index
-            dt['quiz_type'] = result[1]
-            dt['quiz_date'] = result[3]
-            dt['book_title'] = result[6]
-            score = app.database.execute(text("""
-            SELECT
-                score
-            FROM Score
-            WHERE summary_id = :summary_id 
-            """), dt).fetchone()#스코어
-            if score is None:
-                dt['score'] = "미제출"
-            else:
-                dt['score'] = score[0]
-            quiz_list.append(dt)
-            quizes.clear()
-            last_index = result[5]
-            #summary_id가 바뀐 경우, 새로운 summary에 대한 quiz
+    scoreInfo = {}
+    scoreInfo['user_id'] = user_id
+    scoreInfo['summary_id'] = req['summary_id']
+    scoreInfo['quiz_type'] = req['quiz_type']
+    scoreInfo['score'] = data['score']
 
-        if quiz['quiz_id'] != last_quiz_id: quizes.append(quiz)
+    app.database.execute(text("""
+    INSERT INTO Score(
+        user_id, 
+        summary_id, 
+        score,
+        quiz_type
+    ) VALUES (
+        :user_id,
+        :summary_id,
+        :score,
+        :quiz_type
+    )
+    """), scoreInfo)#score db에 삽입
 
-    data['quiz_list'] = quiz_list
-    data['user_id'] = user_id
-    
     return jsonify({
         "status": 200,
         "success": True,
-        "message": "사용자의 퀴즈를 가져옵니다",
+        "message": "퀴즈를 채점합니다",
         "data": data
     })
 
