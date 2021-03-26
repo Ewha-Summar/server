@@ -167,7 +167,7 @@ def summary():
             sql = "SELECT Max(summary_id) FROM summardb.Summary"
             summary_id = app.database.execute(sql).fetchone()#삽입한 summary의 summary_id
             print(summary_id)
-            summary_id = int(summary_id[0])-1
+            summary_id = int(summary_id[0])
             quiz_date = dt.datetime.now()
 
             for i in range(len(question_arr)):
