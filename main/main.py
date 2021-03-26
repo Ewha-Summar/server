@@ -133,7 +133,8 @@ def summary():
         count = req['count']
         bf_summary = req['text']
         input_type = req['input_type']
-        summary_user, question_arr, result_arr = total(bf_summary, count, input_type)
+        keyword = req['keyword']
+        summary_user, question_arr, result_arr = total(bf_summary, count, input_type, keyword)
 
         req['af_summary'] = summary_user
         req['user_id'] = user_id
@@ -306,10 +307,12 @@ def scoring():
         SELECT
             quiz_content,
             correct_answer,
-            correct
+            correct,
+            quiz_type
         FROM Quiz
         WHERE quiz_id = :quiz_id 
         """), quiz).fetchone()#퀴즈 내용과 정답
+        req['quiz_type'] = result['quiz_type']
         '''
         if result[2] is not None:
             return jsonify({
@@ -346,17 +349,20 @@ def scoring():
     scoreInfo = {}
     scoreInfo['user_id'] = user_id
     scoreInfo['summary_id'] = req['summary_id']
+    scoreInfo['quiz_type'] = req['quiz_type']
     scoreInfo['score'] = data['score']
 
     app.database.execute(text("""
     INSERT INTO Score(
         user_id, 
         summary_id, 
-        score
+        score,
+        quiz_type
     ) VALUES (
         :user_id,
         :summary_id,
-        :score
+        :score,
+        :quiz_type
     )
     """), scoreInfo)#score db에 삽입
 

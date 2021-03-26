@@ -151,7 +151,7 @@ def ranked_words(tokenized_data, scores, n=100):
 
 
 # ### 형태소 분석을 이용한 빈칸뚫기
-def make_blank(data, type):
+def make_blank(data, type, keyword):
     data['important_word'] = data.apply(lambda x:
                                         ranked_words(x.token, x.word_score), axis=1)
     np.set_printoptions(threshold=sys.maxsize)
@@ -212,7 +212,7 @@ def make_blank(data, type):
         dict = {}
         for word in arr:
             try:
-                dict[word] = kovec.wv.similarity("범죄", word)
+                dict[word] = kovec.wv.similarity(keyword, word)
             except:
                 dict[word] = 0
         sdict = sorted(dict.items(), key=operator.itemgetter(1), reverse=True)
@@ -229,6 +229,7 @@ def make_blank(data, type):
                 if question_tmp != question:
                     question_arr.append(question_tmp)
                     result_arr.append(word)
+                    blank_arr.remove(word)
                     break
         return question_arr, result_arr     
     else: 
@@ -236,7 +237,7 @@ def make_blank(data, type):
         
 
 
-def make_quiz(data, type):
+def make_quiz(data, type, keyword):
     data['summary_sentences'] = data['summary_7'].apply(sent_tokenize)
     data['tokenized_data_for_word'] = data['summary_sentences'].apply(
         tokenization)
@@ -246,13 +247,13 @@ def make_quiz(data, type):
     data['word_value'] = data['token'].apply(words_to_vectors)
     data['SimMatrix_word'] = data['word_value'].apply(similarity_matrix)
     data['word_score'] = data['SimMatrix_word'].apply(calculate_score)
-    question_arr, result_arr = make_blank(data, type)
+    question_arr, result_arr = make_blank(data, type, keyword)
     return question_arr, result_arr
 
 
-def total(text, count, type):
+def total(text, count, type, keyword):
     data = pd.DataFrame({"article_text": [text]})
     make_summary(text, count, data)
-    question_arr, result_arr = make_quiz(data, type)
+    question_arr, result_arr = make_quiz(data, type, keyword)
 
     return data.loc[0].summary_user, question_arr, result_arr
