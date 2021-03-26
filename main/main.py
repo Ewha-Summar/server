@@ -173,7 +173,7 @@ def summary():
                 req['quiz_content'] = question_arr[i]
                 req['quiz_date'] = quiz_date
                 req['user_id'] = user_id
-                req['summary_id'] = summary_id[0]
+                req['summary_id'] = int(summary_id[0])-1
                 req['correct_answer'] = result_arr[i]
                 app.database.execute(text("""
             INSERT INTO Quiz(
