@@ -196,7 +196,7 @@ def summary():
             )"""), req)#퀴즈 정보 db 삽입
 
             data['content'] = summary_user
-            data['summary_id'] = summary_id[0]
+            data['summary_id'] = summary_id
 
             return jsonify({
                 "status": 200,
