@@ -163,7 +163,8 @@ def summary():
         )"""), req)#summary 정보 db 삽입
 
             #sql = "SELECT LAST_INSERT_ID()"
-            sql = "SELECT AUTO_INCREMENT FROM information_schema.tables WHERE table_name = 'Summary' AND table_schema = DATABASE()"
+            #sql = "SELECT AUTO_INCREMENT FROM information_schema.tables WHERE table_name = 'Summary' AND table_schema = DATABASE()"
+            sql = "SELECT Max(summary_id) FROM summardb.Summary"
             summary_id = app.database.execute(sql).fetchone()#삽입한 summary의 summary_id
             print(summary_id)
             summary_id = int(summary_id[0])-1
