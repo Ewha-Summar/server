@@ -166,6 +166,7 @@ def summary():
             sql = "SELECT AUTO_INCREMENT FROM information_schema.tables WHERE table_name = 'Summary' AND table_schema = DATABASE()"
             summary_id = app.database.execute(sql).fetchone()#삽입한 summary의 summary_id
             print(summary_id)
+            summary_id = int(summary_id[0])-1
             quiz_date = dt.datetime.now()
 
             for i in range(len(question_arr)):
@@ -173,7 +174,7 @@ def summary():
                 req['quiz_content'] = question_arr[i]
                 req['quiz_date'] = quiz_date
                 req['user_id'] = user_id
-                req['summary_id'] = int(summary_id[0])-1
+                req['summary_id'] = summary_id
                 req['correct_answer'] = result_arr[i]
                 app.database.execute(text("""
             INSERT INTO Quiz(
