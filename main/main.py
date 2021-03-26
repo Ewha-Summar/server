@@ -163,7 +163,7 @@ def summary():
 
             sql = "SELECT LAST_INSERT_ID()"
             summary_id = app.database.execute(sql).fetchone()#삽입한 summary의 summary_id
-
+            print(summary_id)
             quiz_date = dt.datetime.now()
 
             for i in range(len(question_arr)):
