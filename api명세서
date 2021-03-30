@@ -402,18 +402,15 @@
                   "quiz_list": [ // 퀴즈 배열
                     {
                         "quiz_id" : 1,
-                        "content" : "오답노트 퀴즈1 내용입니다",
-                        "my_answer" : "나의 오답"
+                        "content" : "오답노트 퀴즈1 내용입니다"
                     },
                     {
                         "quiz_id" : 2,
-                        "content" : "오답노트 퀴즈2 내용입니다",
-                        "my_answer" : "나의 오답"
+                        "content" : "오답노트 퀴즈2 내용입니다"
                     },
                     {
                         "quiz_id" : 3,
-                        "content" : "오답노트 퀴즈3 내용입니다",
-                        "my_answer" : "나의 오답"
+                        "content" : "오답노트 퀴즈3 내용입니다"
                     }
                 ]
               }
