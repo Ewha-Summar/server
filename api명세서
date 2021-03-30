@@ -470,9 +470,9 @@
           }
 
 
-12. 오답노트 퀴즈 결과
+12. 오답노트 퀴즈 불러오기
 
-    - url "/api/mypagequiz"
+    - url "/api/reviewquiz"
     - method
         - get
     - description
@@ -483,7 +483,7 @@
         - success {
             "status" : 200,
             "success" : True,
-            "message" : "사용자의 퀴즈를 가져옵니다",
+            "message" : "사용자의 오답노트 퀴즈를 가져옵니다",
             "data" : {
                 "user_id": "test@naver.com",
                 "quiz_list": [
@@ -491,51 +491,49 @@
                         "quiz": [
                             {
                                 "book_title": "testbook",
-                                "correct": 1,
+                                "review_correct": 1,
                                 "correct_answer": "내용",
                                 "my_answer": "내용",
+                                "review_answer": "내용1",
                                 "quiz_content": "문제1",
                                 "quiz_id": 1,
-                                "quiz_type": 0,
-                                "summary_id": 11
                             },
                             {
                                 "book_title": "testbook",
-                                "correct": 1,
+                                "review_correct": 1,
                                 "correct_answer": "인터넷",
-                                "my_answer": "인터넷",
+                                "my_answer": "인터넷11",
+                                "review_answer": "내용2",
                                 "quiz_content": "문제2",
                                 "quiz_id": 2,
-                                "quiz_type": 0,
-                                "summary_id": 11
                             }
                         ],
-                        "summary_id": 11
+                        "summary_id": 11,
+                        "quiz_type": 0
                     },
                     {
                         "quiz": [
                             {
                                 "book_title": "test2book",
-                                "correct": null,
+                                "review_correct": null,
                                 "correct_answer": "의사",
-                                "my_answer": null,
+                                "my_answer": "의사2",
+                                "review_answer": null,
                                 "quiz_content": "문제문제",
                                 "quiz_id": 8,
-                                "quiz_type": 0,
-                                "summary_id": 12
                             },
                             {
                                 "book_title": "test2book",
-                                "correct": null,
+                                "review_correct": null,
                                 "correct_answer": "사회",
-                                "my_answer": null,
+                                "my_answer": "정답",
+                                "review_answer": null,
                                 "quiz_content": "문제문제",
                                 "quiz_id": 9,
-                                "quiz_type": 0,
-                                "summary_id": 12
                             }
                         ],
-                        "summary_id": 12
+                        "summary_id": 12,
+                        "quiz_type": 0
                     }
                 ]
             }             
