@@ -503,7 +503,8 @@
                         "book_title": "testbook",
                         "summary_id": 11,
                         "quiz_type": 0,
-                        "score": "1/2"
+                        "score": "1/2",
+                        "quiz_date": date
                     },
                     {
                         "quiz": [
@@ -525,7 +526,8 @@
                         "book_title": "test2book",
                         "summary_id": 12,
                         "quiz_type": 0,
-                        "score": "미제출"
+                        "score": "미제출",
+                        "quiz_date": null
                     }
                 ]
             }             
