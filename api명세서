@@ -458,7 +458,7 @@
                         "review_correct": 'X'
                     }
                 ],
-                "score" : "2/3"
+                "review_score" : "2/3"
               }
           }
 
