@@ -469,7 +469,7 @@
     - method
         - get
     - description
-        - 사용자의 요약을 보여줍니다
+        - 사용자의 오답노트 퀴즈를 보여줍니다
     - header
         - jwt
     - return type
