@@ -166,17 +166,17 @@
                     {
                         "quiz_id": 1,
                         "content" : "퀴즈1 내용입니다",
-                        "correct": True
+                        "correct": 'O'
                     },
                     {
                         "quiz_id": 2,
                         "content" : "퀴즈2 내용입니다",
-                        "correct": True
+                        "correct": 'O'
                     },                   
                     {
                         "quiz_id": 3
                         "content" : "퀴즈3 내용입니다",
-                        "correct": False
+                        "correct": 'X'
                     }
                 ],
                 "score" : "2/3"
