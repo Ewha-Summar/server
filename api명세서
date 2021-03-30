@@ -298,52 +298,48 @@
                     {
                         "quiz": [
                             {
-                                "book_title": "testbook",
-                                "correct": 1,
+                                "correct": 'O',
                                 "correct_answer": "내용",
                                 "my_answer": "내용",
                                 "quiz_content": "문제1",
                                 "quiz_id": 1,
-                                "quiz_type": 0,
-                                "summary_id": 11
                             },
                             {
-                                "book_title": "testbook",
-                                "correct": 1,
+                                "correct": 'O',
                                 "correct_answer": "인터넷",
                                 "my_answer": "인터넷",
                                 "quiz_content": "문제2",
                                 "quiz_id": 2,
-                                "quiz_type": 0,
-                                "summary_id": 11
                             }
                         ],
-                        "summary_id": 11
+                        "book_title": "testbook",
+                        "summary_id": 11,
+                        "quiz_type": 0,
+                        "quiz_date": date,
+                        "score": "2/2"
                     },
                     {
                         "quiz": [
                             {
-                                "book_title": "test2book",
                                 "correct": null,
                                 "correct_answer": "의사",
                                 "my_answer": null,
                                 "quiz_content": "문제문제",
                                 "quiz_id": 8,
-                                "quiz_type": 0,
-                                "summary_id": 12
                             },
                             {
-                                "book_title": "test2book",
                                 "correct": null,
                                 "correct_answer": "사회",
                                 "my_answer": null,
                                 "quiz_content": "문제문제",
                                 "quiz_id": 9,
-                                "quiz_type": 0,
-                                "summary_id": 12
                             }
                         ],
-                        "summary_id": 12
+                        "book_title": "test2book",
+                        "summary_id": 12,
+                        "quiz_type": 0,
+                        "quiz_date": date,
+                        "score": "미제출"
                     }
                 ]
             }             
@@ -490,50 +486,46 @@
                     {
                         "quiz": [
                             {
-                                "book_title": "testbook",
-                                "review_correct": 1,
+                                "review_correct": 'X',
                                 "correct_answer": "내용",
-                                "my_answer": "내용",
                                 "review_answer": "내용1",
                                 "quiz_content": "문제1",
                                 "quiz_id": 1,
                             },
                             {
-                                "book_title": "testbook",
-                                "review_correct": 1,
+                                "review_correct": 'O',
                                 "correct_answer": "인터넷",
-                                "my_answer": "인터넷11",
-                                "review_answer": "내용2",
+                                "review_answer": "인터넷",
                                 "quiz_content": "문제2",
                                 "quiz_id": 2,
                             }
                         ],
+                        "book_title": "testbook",
                         "summary_id": 11,
-                        "quiz_type": 0
+                        "quiz_type": 0,
+                        "score": "1/2"
                     },
                     {
                         "quiz": [
                             {
-                                "book_title": "test2book",
                                 "review_correct": null,
                                 "correct_answer": "의사",
-                                "my_answer": "의사2",
                                 "review_answer": null,
                                 "quiz_content": "문제문제",
                                 "quiz_id": 8,
                             },
                             {
-                                "book_title": "test2book",
                                 "review_correct": null,
                                 "correct_answer": "사회",
-                                "my_answer": "정답",
                                 "review_answer": null,
                                 "quiz_content": "문제문제",
                                 "quiz_id": 9,
                             }
                         ],
+                        "book_title": "test2book",
                         "summary_id": 12,
-                        "quiz_type": 0
+                        "quiz_type": 0,
+                        "score": "미제출"
                     }
                 ]
             }             
