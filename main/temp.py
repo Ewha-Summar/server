@@ -683,3 +683,4 @@ if __name__ == "__main__":
     #ssl_context = ssl.SSLContext(ssl.PROTOCOL_TLS)
     #ssl_context.load_cert_chain(certfile='private.pem', keyfile='private.pem', password='ewha2020summar')
     app.run(host="0.0.0.0", port="5000", ssl_context='adhoc')
+    app.run(host="0.0.0.0", port="5000")
