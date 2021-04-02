@@ -10,6 +10,7 @@ from OpenSSL import SSL
 import datetime as dt
 import bcrypt
 import jwt
+import ssl
 
 app = Flask(__name__)
 app.config.from_pyfile("config.py")
@@ -22,11 +23,11 @@ cors = CORS(app, resources = {
     r"/api/*": {"origin": "*"}
     })
 
-context = SSL.Context(SSL.SSLv3_METHOD)
-cert = 'private.pem'
-pkey = 'private.key'
-context.use_privatekey_file(pkey)
-context.use_certificate_file(cert)
+#context = SSL.Context(SSL.SSLv3_METHOD)
+#cert = 'private.pem'
+#pkey = 'private.key'
+#context.use_privatekey_file(pkey)
+#context.use_certificate_file(cert)
 
 def get_user_id(request):
     token = request.headers.get('Authorization')
@@ -585,6 +586,6 @@ def qna():
 
 
 if __name__ == "__main__":
-    #ssl_context = ssl.SSLContext(ssl.PROTOCOL_TLS)
-    #ssl_context.load_cert_chain(certfile='ewha-summar.pem', keyfile='
-    app.run(host="0.0.0.0", port="5000", ssl_context=(cert, pkey))
+    ssl_context = ssl.SSLContext(ssl.PROTOCOL_TLS)
+    ssl_context.load_cert_chain(certfile='private.pem', keyfile='private.pem', password='ewha2020summar')
+    app.run(host="0.0.0.0", port="5000", ssl_context=ssl_context)
