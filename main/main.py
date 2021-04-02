@@ -6,6 +6,7 @@ from werkzeug.exceptions import HTTPException, NotFound
 from utils import SECRET_KEY, ALGORITHM
 from summarize import total, make_summary
 from qna import ai_qna
+from OpenSSL import SSL
 import datetime as dt
 import bcrypt
 import jwt
@@ -21,6 +22,11 @@ cors = CORS(app, resources = {
     r"/api/*": {"origin": "*"}
     })
 
+context = SSL.Context(SSL.SSLv3_METHOD)
+cert = 'private.pem'
+pkey = 'private.pem'
+context.use_privatekey_file(pkey)
+context.use_certificate_file(cert)
 
 def get_user_id(request):
     token = request.headers.get('Authorization')
@@ -579,4 +585,6 @@ def qna():
 
 
 if __name__ == "__main__":
-    app.run(host="0.0.0.0", port="5000")
+    #ssl_context = ssl.SSLContext(ssl.PROTOCOL_TLS)
+    #ssl_context.load_cert_chain(certfile='ewha-summar.pem', keyfile='
+    app.run(host="0.0.0.0", port="5000", ssl_context=(cert, pkey))
