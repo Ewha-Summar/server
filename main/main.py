@@ -24,7 +24,7 @@ cors = CORS(app, resources = {
 
 context = SSL.Context(SSL.SSLv3_METHOD)
 cert = 'private.pem'
-pkey = 'private.pem'
+pkey = 'private.key'
 context.use_privatekey_file(pkey)
 context.use_certificate_file(cert)
 
