@@ -333,11 +333,11 @@ def scoring():
         q['quiz_id'] = quiz['quiz_id']
         q['content'] = result[0]
         if quiz['my_answer'] == result[1]:
-            q['correct'] = True
+            q['correct'] = 'O'
             quiz['correct'] = True
             correct_num += 1
         else:
-            q['correct'] = False
+            q['correct'] = 'X'
             quiz['correct'] = False
 
 
@@ -583,6 +583,242 @@ def qna():
             "message": "질의응답 성공",
             "data": data
         })
+
+
+@app.route('/api/review_quiz', methods=['GET'])
+def review_quiz_return():
+    quiz_type = request.args.get('quiz_type')
+    summary_id = request.args.get('summary_id')
+
+    data = {}
+    data['quiz_list'] = []
+
+    id = app.database.execute(text("""
+        SELECT
+            user_id
+        FROM Quiz
+        WHERE summary_id = :summary_id
+    """), {'summary_id': summary_id}).fetchall()#요청된 summary의 user_id
+
+    user_id = get_user_id(request)#요청자의 user_id
+
+    '''
+    if user_id != id:
+        return jsonify({
+            "status": 401,
+            "success": False,
+            "message": "권한이 없습니다"
+        })#두 아이디가 일치하지 않을 경우 권한 없음
+    '''
+
+    results = app.database.execute(text("""
+        SELECT
+            quiz_id,
+            quiz_content
+        FROM Quiz
+        WHERE quiz_type = :quiz_type 
+        and summary_id = :summary_id
+        and correct = false
+    """), {'quiz_type': quiz_type, 'summary_id': summary_id}).fetchall()#요청 summary에 해당하는 quiz list
+    
+    for result in results:
+        quiz = {}
+        quiz['quiz_id'] = result[0]
+        quiz['content'] = result[1]
+        data['quiz_list'].append(quiz)
+        #quiz list를 json 배열로 변환
+
+
+    return jsonify({
+        "status": 200,
+        "success": True,
+        "message": "오답노트 퀴즈를 가져옵니다",
+        "data": data
+    })
+
+
+@app.route('/api/review_scoring', methods=['POST'])
+def review_scoring():
+    req = request.json
+    user_id = get_user_id(request)
+    if user_id is None:
+        return jsonify({
+            "status": 401,
+            "success": False,
+            "message": "로그인이 필요합니다"
+        })
+
+    quizes = req['quiz_list']
+
+    data = {}
+    data['correct_list'] = []
+    review_date = dt.datetime.now()
+    correct_num = 0#정답 수
+    for quiz in quizes:
+        result = app.database.execute(text("""
+        SELECT
+            quiz_content,
+            correct_answer,
+            review_correct,
+            quiz_type
+        FROM Quiz
+        WHERE quiz_id = :quiz_id 
+        """), quiz).fetchone()#퀴즈 내용과 정답
+        req['quiz_type'] = result['quiz_type']
+        '''
+        if result[2] is not None:
+            return jsonify({
+                "status": 400,
+                "success": False,
+                "message": "이미 제출한 퀴즈입니다"
+            })            
+        '''
+        #채점
+        q = {}
+        q['quiz_id'] = quiz['quiz_id']
+        q['content'] = result[0]
+        quiz['review_date'] = review_date
+        if quiz['review_answer'] == result[1]:
+            q['review_correct'] = 'O'
+            quiz['review_correct'] = True
+            correct_num += 1
+        else:
+            q['review_correct'] = 'X'
+            quiz['review_correct'] = False
+
+
+        app.database.execute(text("""
+        UPDATE Quiz
+        SET
+            review_answer = :review_answer,
+            review_correct = :review_correct,
+            review_date = :review_date
+        WHERE quiz_id = :quiz_id
+        """), quiz)
+        #quiz의 correct update
+        data['correct_list'].append(q)#return data에 추가
+
+    data['review_score'] = str(correct_num) + '/' + str(len(quizes))
+
+    scoreInfo = {}
+    scoreInfo['summary_id'] = req['summary_id']
+    scoreInfo['quiz_type'] = req['quiz_type']
+    scoreInfo['review_score'] = data['review_score']
+
+    app.database.execute(text("""
+    UPDATE Score
+    SET
+        review_score = :review_score
+    Where summary_id = :summary_id
+    and quiz_type = :quiz_type
+    """), scoreInfo)#score db에 삽입
+
+    return jsonify({
+        "status": 200,
+        "success": True,
+        "message": "오답노트 퀴즈를 채점합니다",
+        "data": data
+    })
+
+
+@app.route('/api/reviewquiz')
+def reviewquiz():
+    data = {}
+    user_id = get_user_id(request)
+    if user_id is None:
+        return jsonify({
+            "status": 401,
+            "success": False,
+            "message": "로그인이 필요합니다"
+        })
+
+    results = app.database.execute(text("""
+        SELECT
+            *
+        FROM Quiz
+        WHERE user_id = :user_id
+        and correct = false
+    """), {'user_id': user_id}).fetchall()#유저의 모든 오답노트 퀴즈를 가져옴
+
+    quiz_list = []
+    quizes = []
+    last_index = results[0][5]#마지막으로 처리된 퀴즈의 summary_id
+    last_quiz_id = results[-1][0]#불러온 마지막 quiz
+    for result in results:
+        quiz = {}
+        quiz['quiz_id'] = result[0]
+        quiz['quiz_content'] = result[2]
+        quiz['correct_answer'] = result[8]
+        quiz['review_answer'] = result[10]
+        quiz['review_correct'] = result[11]
+        if result[11] == 0:
+            quiz['review_correct'] = 'X'
+        elif result[11] == 1:
+            quiz['review_correct'] = 'O'
+
+        #정보 저장
+
+        if quiz['quiz_id'] == last_quiz_id:
+            quizes.append(quiz)
+            dt = {}
+            dt['quiz'] = []
+            for i in quizes:
+                dt['quiz'].append(i)
+            dt['quiz_type'] = result[1]
+            dt['quiz_date'] = result[3]
+            dt['summary_id'] = result[5]
+            dt['book_title'] = result[6]
+
+            score = app.database.execute(text("""
+            SELECT
+                review_score
+            FROM Score
+            WHERE summary_id = :summary_id
+            and quiz_type = :quiz_type
+            """), dt).fetchone()#스코어
+            if score is None:
+                dt['review_score'] = "미제출"
+            else:
+                dt['review_score'] = score[0]          
+            quiz_list.append(dt)
+            quizes.clear()
+            #마지막 퀴즈인 경우
+    
+        elif last_index != result[5]:
+            dt = {}
+            dt['quiz'] = []
+            for i in quizes:
+                dt['quiz'].append(i)
+            dt['summary_id'] = last_index
+            dt['quiz_type'] = result[1]
+            dt['quiz_date'] = result[3]
+            dt['book_title'] = result[6]
+            score = app.database.execute(text("""
+            SELECT
+                review_score
+            FROM Score
+            WHERE summary_id = :summary_id 
+            """), dt).fetchone()#스코어
+            if score is None:
+                dt['score'] = "미제출"
+            else:
+                dt['score'] = score[0]
+            quiz_list.append(dt)
+            quizes.clear()
+            last_index = result[5]
+            #summary_id가 바뀐 경우, 새로운 summary에 대한 quiz
+
+        if quiz['quiz_id'] != last_quiz_id: quizes.append(quiz)
+
+    data['quiz_list'] = quiz_list
+    data['user_id'] = user_id
+    
+    return jsonify({
+        "status": 200,
+        "success": True,
+        "message": "사용자의 퀴즈를 가져옵니다",
+        "data": data
+    })
 
 
 if __name__ == "__main__":
