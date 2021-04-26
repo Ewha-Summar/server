@@ -23,6 +23,7 @@ import json
 import requests
 import sys
 import nltk
+import codecs
 
 from gaechae import entity
 
@@ -32,7 +33,10 @@ okt = Okt()
 kovec = Word2Vec.load("ko.bin")
 embedding_dim = 200
 zero_vector = np.zeros(embedding_dim)
-stop_words = pd.read_excel (r'stop_words.xlsx', usecols=0)
+# stop_words = pd.read_excel(r'stop_words.xlsx')
+stop_words = np.loadtxt("stop_words.csv", delimiter=",", encoding='utf-8')
+# filecp = codecs.open(myfile, encoding = 'cp1252')
+# mydata = np.loadtxt(filecp, skiprows = n)
 print(stop_words) 
 # stop_words = ['의', '가', '이', '은', '들', '는', '좀', '잘',
 #               '걍', '과', '도', '를', '으로', '자', '에', '와', '한', '하다']
