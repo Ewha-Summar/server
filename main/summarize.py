@@ -33,11 +33,8 @@ okt = Okt()
 kovec = Word2Vec.load("ko.bin")
 embedding_dim = 200
 zero_vector = np.zeros(embedding_dim)
-# stop_words = pd.read_excel(r'stop_words.xlsx')
-stop_words = pd.read_csv("stop_words.csv", delimiter=",", encoding='cp949')
-# filecp = codecs.open(myfile, encoding = 'cp1252')
-# mydata = np.loadtxt(filecp, skiprows = n)
-print(stop_words) 
+f = pd.read_csv("stop_words.csv", header=None, delimiter=",", encoding='cp949', dtype=str, usecols=[0])
+stop_words = f.values
 # stop_words = ['의', '가', '이', '은', '들', '는', '좀', '잘',
 #               '걍', '과', '도', '를', '으로', '자', '에', '와', '한', '하다']
 
