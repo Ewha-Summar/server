@@ -34,7 +34,7 @@ kovec = Word2Vec.load("ko.bin")
 embedding_dim = 200
 zero_vector = np.zeros(embedding_dim)
 # stop_words = pd.read_excel(r'stop_words.xlsx')
-stop_words = np.loadtxt("stop_words.csv", delimiter=",", encoding='cp949')
+stop_words = pd.read_csv("stop_words.csv", delimiter=",", encoding='cp949')
 # filecp = codecs.open(myfile, encoding = 'cp1252')
 # mydata = np.loadtxt(filecp, skiprows = n)
 print(stop_words) 
