@@ -31,6 +31,8 @@ cors = CORS(app, resources = {
 
 def get_user_id(request):
     token = request.headers.get('Authorization')
+    if token is None:
+        return None
     payload = jwt.decode(token, SECRET_KEY, ALGORITHM)
 
     return payload['user_id']
@@ -817,6 +819,48 @@ def reviewquiz():
         "status": 200,
         "success": True,
         "message": "사용자의 퀴즈를 가져옵니다",
+        "data": data
+    })
+
+
+@app.route('/api/self_learning', methods=['POST'])
+def self_learning():
+    req = request.json
+    data = {}
+    data['summary_id'] = req['summary_id']
+    user_id = get_user_id(request)
+    app.database.execute(text("""
+    UPDATE Summary
+    SET
+        self_learning = :self_learning
+    Where summary_id = :summary_id
+    """), req)
+
+    return jsonify({
+        "status": 200,
+        "success": True,
+        "message": "자가학습 요약을 삽입합니다",
+        "data": data
+    })
+
+
+@app.route('/api/self_learning')
+def return_self_learning():
+    data = {}
+    data['summary_id'] = request.args.get('summary_id')
+    user_id = get_user_id(request)
+    result = app.database.execute(text("""
+        SELECT
+            self_learning
+        FROM Summary
+        WHERE summary_id = :summary_id
+    """), data).fetchone()
+    data['self_learning']= result[0]
+    
+    return jsonify({
+        "status": 200,
+        "success": True,
+        "message": "자가학습 요약을 반환합니다",
         "data": data
     })
 
