@@ -24,10 +24,12 @@ import requests
 import sys
 import nltk
 
+from gaechae import entity
+
 nltk.download('punkt')
 
 okt = Okt()
-kovec = Word2Vec.load("ko.bin")
+kovec = Word2Vec.load("D:\ko.bin")
 embedding_dim = 200
 zero_vector = np.zeros(embedding_dim)
 stop_words = pd.read_excel (r'stop_words.xlsx', usecols=0)
@@ -203,10 +205,8 @@ def make_blank(data, type, keyword):
                     lemma = s['morp'][i]['lemma']  # morpheme
                     pos = s['morp'][i]['type']  # tag
                     if pos == "NNG":
-                        #sys.stdout.write(lemma+"\n")
                         result += lemma+" "
                     if pos == "NNP":
-                        #sys.stdout.write(lemma+"\n")
                         result += lemma+" "
 
         # ### 위에서 추린 단어들을 사용자가 입력한 텍스트 전반의 키워드 중심으로 중요도 재배열
@@ -221,12 +221,27 @@ def make_blank(data, type, keyword):
         blank_arr = []
         for idx in range(len(sdict)):
             blank_arr.append(sdict[idx][0])
+        
+        entity_arr = entity(sentence)
 
         # ### 문제 생성
         question_arr = []
         result_arr = []
         for question in data['summary_sentences'][0]:
+            flag = 0
+            for word in entity_arr:
+                question_tmp = question.replace(word,"*"*len(word))
+                if question_tmp != question:
+                    question_arr.append(question_tmp)
+                    entity_arr.remove(word)
+                    result_arr.append(word)
+                    if word in blank_arr:
+                        blank_arr.remove(word)
+                    flag = 1
+                    break
             for word in blank_arr:
+                if flag == 1:
+                    break
                 question_tmp = question.replace(word, "*"*len(word))
                 if question_tmp != question:
                     question_arr.append(question_tmp)
@@ -237,7 +252,6 @@ def make_blank(data, type, keyword):
     else: 
         return response.status, None
         
-
 
 def make_quiz(data, type, keyword):
     data['summary_sentences'] = data['summary_7'].apply(sent_tokenize)
