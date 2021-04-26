@@ -30,8 +30,10 @@ okt = Okt()
 kovec = Word2Vec.load("ko.bin")
 embedding_dim = 200
 zero_vector = np.zeros(embedding_dim)
-stop_words = ['의', '가', '이', '은', '들', '는', '좀', '잘',
-              '걍', '과', '도', '를', '으로', '자', '에', '와', '한', '하다']
+stop_words = pd.read_excel (r'stop_words.xlsx', usecols=0)
+print(stop_words) 
+# stop_words = ['의', '가', '이', '은', '들', '는', '좀', '잘',
+#               '걍', '과', '도', '를', '으로', '자', '에', '와', '한', '하다']
 
 data = pd.DataFrame()
 

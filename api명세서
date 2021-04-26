@@ -464,7 +464,6 @@
 
 
 12. 오답노트 퀴즈 불러오기
-
     - url "/api/reviewquiz"
     - method
         - get
@@ -529,3 +528,47 @@
                 ]
             }             
         }
+
+13. 자가학습
+   - url "/api/self_learning"
+   - method
+        - post
+   - description
+        - 사용자의 자가학습 요약 입력받기
+   - header
+        - jwt
+   - form parameter
+      - summary_id
+      - self_learning
+   - return type
+      - success
+         {
+             "status" : 200,
+             "success" : True,
+             "message" : "자가학습 요약을 삽입합니다.",
+             "data" : {
+                "summary_id" : 1
+             }
+         }
+
+14. 자가학습 요약 반환
+   - url "/api/self_learning/$summary_id"
+   - method
+      - get
+   - description
+      - 사용자의 자가학습 요약 반환
+    - header
+        - jwt
+   - query parameter
+      - summary_id
+   - return type
+      - success
+         {
+             "status" : 200,
+             "success" : True,
+             "message" : "자가학습 요약을 반환합니다.",
+             "data" : {
+                "self_learning" : "사용자 자가학습 요약 문장입니다",
+                "summary_id" : 1
+             }
+         }
