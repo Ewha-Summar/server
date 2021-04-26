@@ -29,7 +29,7 @@ from gaechae import entity
 nltk.download('punkt')
 
 okt = Okt()
-kovec = Word2Vec.load("D:\ko.bin")
+kovec = Word2Vec.load("ko.bin")
 embedding_dim = 200
 zero_vector = np.zeros(embedding_dim)
 stop_words = pd.read_excel (r'stop_words.xlsx', usecols=0)
