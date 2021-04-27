@@ -847,16 +847,22 @@ def self_learning():
 @app.route('/api/self_learning')
 def return_self_learning():
     data = {}
-    data['summary_id'] = request.args.get('summary_id')
-    user_id = get_user_id(request)
-    result = app.database.execute(text("""
+    data['user_id'] = get_user_id(request)
+    results = app.database.execute(text("""
         SELECT
+            summary_id,
             self_learning
         FROM Summary
-        WHERE summary_id = :summary_id
-    """), data).fetchone()
-    data['self_learning']= result[0]
-    
+        WHERE user_id = :user_id
+    """), data).fetchall()
+    summary = []
+    for result in results:
+        dt = {}
+        dt['summary_id'] = result[0]
+        dt['self_learning'] = result[1]
+        summary.append(dt)
+    data['summary'] = summary
+
     return jsonify({
         "status": 200,
         "success": True,
