@@ -552,23 +552,29 @@
          }
 
 14. 자가학습 요약 반환
-   - url "/api/self_learning/$summary_id"
+   - url "/api/self_learning"
    - method
       - get
    - description
       - 사용자의 자가학습 요약 반환
     - header
         - jwt
-   - query parameter
-      - summary_id
    - return type
       - success
          {
              "status" : 200,
              "success" : True,
              "message" : "자가학습 요약을 반환합니다.",
-             "data" : {
-                "self_learning" : "사용자 자가학습 요약 문장입니다",
+             "data" :
+            "user_id" : userID,
+            "summary": [
+             {
+                "self_learning" : "사용자 자가학습 요약1 문장입니다",
                 "summary_id" : 1
+             },
+             {
+                "self_learning" : "사용자 자가학습 요약2 문장입니다",
+                "summary_id" : 2
              }
+             ]
          }
