@@ -23,20 +23,17 @@ import json
 import requests
 import sys
 import nltk
-import codecs
 
 from gaechae import entity
 
 nltk.download('punkt')
 
 okt = Okt()
-kovec = Word2Vec.load("ko.bin")
+kovec = Word2Vec.load("D:\ko.bin")
 embedding_dim = 200
 zero_vector = np.zeros(embedding_dim)
-f = pd.read_csv("stop_words.csv", header=None, delimiter=",", encoding='cp949', dtype=str, usecols=[0])
-stop_words = f.values
-# stop_words = ['의', '가', '이', '은', '들', '는', '좀', '잘',
-#               '걍', '과', '도', '를', '으로', '자', '에', '와', '한', '하다']
+stop_words = ['의', '가', '이', '은', '들', '는', '좀', '잘',
+              '걍', '과', '도', '를', '으로', '자', '에', '와', '한', '하다']
 
 data = pd.DataFrame()
 
@@ -249,10 +246,12 @@ def make_blank(data, type, keyword):
                     result_arr.append(word)
                     blank_arr.remove(word)
                     break
+
         return question_arr, result_arr     
     else: 
         return response.status, None
         
+
 
 def make_quiz(data, type, keyword):
     data['summary_sentences'] = data['summary_7'].apply(sent_tokenize)
