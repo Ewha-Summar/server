@@ -803,8 +803,6 @@ def reviewquiz():
     
         elif last_index != result[5]:
 
-            last_index = result[5]
-
             dt = {}
             dt['quiz'] = []
             for i in quizes:
