@@ -810,14 +810,14 @@ def reviewquiz():
 
             info = app.database.execute(text("""
             SELECT
-                summary_id, quiz_type, quiz_date, book_title
+                summary_id, quiz_type, review_date, book_title
             FROM Quiz
             WHERE summary_id = :summary_id
             """),  {'summary_id' : last_index}).fetchall()
 
             dt['summary_id'] = info[0][0]
             dt['quiz_type'] = info[0][1]
-            dt['quiz_date'] = info[0][2]
+            dt['review_date'] = info[0][2]
             dt['book_title'] = info[0][3]
             last_index = result[5]
 
