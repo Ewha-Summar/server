@@ -29,7 +29,7 @@ from gaechae import entity
 nltk.download('punkt')
 
 okt = Okt()
-kovec = Word2Vec.load("D:\ko.bin")
+kovec = Word2Vec.load("ko.bin")
 embedding_dim = 200
 zero_vector = np.zeros(embedding_dim)
 #stop_words = ['의', '가', '이', '은', '들', '는', '좀', '잘', '걍', '과', '도', '를', '으로', '자', '에', '와', '한', '하다']
