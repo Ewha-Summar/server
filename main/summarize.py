@@ -23,6 +23,7 @@ import json
 import requests
 import sys
 import nltk
+import pandas as pd
 
 from gaechae import entity
 
@@ -32,8 +33,11 @@ okt = Okt()
 kovec = Word2Vec.load("D:\ko.bin")
 embedding_dim = 200
 zero_vector = np.zeros(embedding_dim)
-stop_words = ['의', '가', '이', '은', '들', '는', '좀', '잘',
+#stop_words = ['의', '가', '이', '은', '들', '는', '좀', '잘',
               '걍', '과', '도', '를', '으로', '자', '에', '와', '한', '하다']
+f = pd.read_csv("stop_words.csv", header=None, delimiter=",", encoding='cp949', dtype=str, usecols=[0])
+stop_words = f.values
+
 
 data = pd.DataFrame()
 
