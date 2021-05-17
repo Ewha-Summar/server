@@ -500,7 +500,7 @@
                         "summary_id": 11,
                         "quiz_type": 0,
                         "review_score": "1/2",
-                        "review_date": date
+                        "quiz_date": date
                     },
                     {
                         "quiz": [
@@ -523,7 +523,7 @@
                         "summary_id": 12,
                         "quiz_type": 0,
                         "review_score": "미제출",
-                        "review_date": null
+                        "quiz_date": null
                     }
                 ]
             }             

@@ -402,8 +402,10 @@ def mypagequiz():
 
     quiz_list = []
     quizes = []
-    last_index = results[0][5]#마지막으로 처리된 퀴즈의 summary_id
-    last_quiz_id = results[-1][0]#불러온 마지막 quiz
+    if results:
+        last_index = results[0][5]#마지막으로 처리된 퀴즈의 summary_id
+        last_quiz_id = results[-1][0]#불러온 마지막 quiz
+
     for result in results:
         quiz = {}
         quiz['quiz_id'] = result[0]
@@ -415,7 +417,6 @@ def mypagequiz():
             quiz['correct'] = 'X'
         elif result[9] == 1:
             quiz['correct'] = 'O'
-
         #정보 저장
 
         if quiz['quiz_id'] == last_quiz_id:
@@ -443,15 +444,27 @@ def mypagequiz():
             quizes.clear()
             #마지막 퀴즈인 경우
     
-        elif last_index != result[5]:
+        elif last_index != result[5]:#마지막 퀴즈가 아니고, 삽입된 summary_id 가 바뀌었을 경우
             dt = {}
             dt['quiz'] = []
+            
             for i in quizes:
                 dt['quiz'].append(i)
-            dt['summary_id'] = last_index
-            dt['quiz_type'] = result[1]
-            dt['quiz_date'] = result[3]
-            dt['book_title'] = result[6]
+
+            info = app.database.execute(text("""
+            SELECT
+                summary_id, quiz_type, quiz_date, book_title
+            FROM Quiz
+            WHERE summary_id = :summary_id
+            """),  {'summary_id' : last_index}).fetchall()
+
+            dt['summary_id'] = info[0][0]
+            dt['quiz_type'] = info[0][1]
+            dt['quiz_date'] = info[0][2]
+            dt['book_title'] = info[0][3]
+
+            last_index = result[5]
+
             score = app.database.execute(text("""
             SELECT
                 score
@@ -464,10 +477,10 @@ def mypagequiz():
                 dt['score'] = score[0]
             quiz_list.append(dt)
             quizes.clear()
-            last_index = result[5]
             #summary_id가 바뀐 경우, 새로운 summary에 대한 quiz
 
-        if quiz['quiz_id'] != last_quiz_id: quizes.append(quiz)
+        if quiz['quiz_id'] != last_quiz_id: 
+            quizes.append(quiz)
 
     data['quiz_list'] = quiz_list
     data['user_id'] = user_id
@@ -478,6 +491,7 @@ def mypagequiz():
         "message": "사용자의 퀴즈를 가져옵니다",
         "data": data
     })
+
 
 @app.route('/api/userSummary')
 def userSummary():
@@ -744,8 +758,9 @@ def reviewquiz():
 
     quiz_list = []
     quizes = []
-    last_index = results[0][5]#마지막으로 처리된 퀴즈의 summary_id
-    last_quiz_id = results[-1][0]#불러온 마지막 quiz
+    if results:
+        last_index = results[0][5]
+        last_quiz_id = results[-1][0]#불러온 마지막 quiz
     for result in results:
         quiz = {}
         quiz['quiz_id'] = result[0]
@@ -767,7 +782,7 @@ def reviewquiz():
             for i in quizes:
                 dt['quiz'].append(i)
             dt['quiz_type'] = result[1]
-            dt['quiz_date'] = result[3]
+            dt['quiz_date'] = result[12]
             dt['summary_id'] = result[5]
             dt['book_title'] = result[6]
 
@@ -787,30 +802,43 @@ def reviewquiz():
             #마지막 퀴즈인 경우
     
         elif last_index != result[5]:
+
             dt = {}
             dt['quiz'] = []
             for i in quizes:
                 dt['quiz'].append(i)
-            dt['summary_id'] = last_index
-            dt['quiz_type'] = result[1]
-            dt['quiz_date'] = result[3]
-            dt['book_title'] = result[6]
+
+            info = app.database.execute(text("""
+            SELECT
+                summary_id, quiz_type, review_date, book_title
+            FROM Quiz
+            WHERE summary_id = :summary_id
+            """),  {'summary_id' : last_index}).fetchall()
+
+            dt['summary_id'] = info[0][0]
+            dt['quiz_type'] = info[0][1]
+            dt['quiz_date'] = info[0][2]
+            dt['book_title'] = info[0][3]
+            last_index = result[5]
+
             score = app.database.execute(text("""
             SELECT
                 review_score
             FROM Score
             WHERE summary_id = :summary_id 
             """), dt).fetchone()#스코어
+
             if score is None:
                 dt['score'] = "미제출"
             else:
                 dt['score'] = score[0]
             quiz_list.append(dt)
             quizes.clear()
-            last_index = result[5]
+            
             #summary_id가 바뀐 경우, 새로운 summary에 대한 quiz
 
-        if quiz['quiz_id'] != last_quiz_id: quizes.append(quiz)
+        if quiz['quiz_id'] != last_quiz_id: 
+            quizes.append(quiz)
 
     data['quiz_list'] = quiz_list
     data['user_id'] = user_id
@@ -818,7 +846,7 @@ def reviewquiz():
     return jsonify({
         "status": 200,
         "success": True,
-        "message": "사용자의 퀴즈를 가져옵니다",
+        "message": "사용자의 오답노트 퀴즈를 가져옵니다",
         "data": data
     })
 
