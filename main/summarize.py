@@ -23,7 +23,6 @@ import json
 import requests
 import sys
 import nltk
-import pandas as pd
 
 from gaechae import entity
 
