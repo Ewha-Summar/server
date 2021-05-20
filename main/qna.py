@@ -34,6 +34,7 @@ def ai_qna(passage, question):
             body=json.dumps(requestJson)
         )
 
+        print(str(response.data, "utf-8"))
         data = json.loads(str(response.data,"utf-8"))
         sentence = data['return_object']['MRCInfo']
         answer[idx] = sentence['answer']
