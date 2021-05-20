@@ -17,7 +17,9 @@ def ai_qna(passage, question):
             
 
         openApiURL = "http://aiopen.etri.re.kr:8000/MRCServlet"
-        accessKey = "d4a16891-dd45-4883-a873-777a8fda8787"
+        #accessKey = "d4a16891-dd45-4883-a873-777a8fda8787"
+        accessKey = "276c0c80-14bc-43c6-a320-5888bfecc74c"
+        
         
         requestJson = {
             "access_key": accessKey,
