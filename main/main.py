@@ -107,7 +107,7 @@ def login():
             'user_id' : user_id
         }
         token = jwt.encode(payload, SECRET_KEY, ALGORITHM)#토큰생성
-        token.decode('utf-8')
+        token.encode('utf-8')
         print(token)
 
         return jsonify({
