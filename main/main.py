@@ -108,6 +108,7 @@ def login():
         }
         token = jwt.encode(payload, SECRET_KEY, ALGORITHM)#토큰생성
         token.decode('utf-8')
+        print(token)
 
         return jsonify({
             "status": 200,
