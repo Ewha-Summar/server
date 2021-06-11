@@ -136,7 +136,7 @@ def summary():
             "success": False,
             "message": "로그인이 필요합니다"
         })
-
+    print('1')
     if request.method == 'POST':
         req = request.json
 
@@ -148,7 +148,7 @@ def summary():
 
         req['af_summary'] = summary_user
         req['user_id'] = user_id
-
+        print('2')
         #result_arr : 퀴즈에 대한 정답 배열
         if result_arr is not None:
             app.database.execute(text("""
@@ -202,7 +202,7 @@ def summary():
                 :book_title,
                 :correct_answer
             )"""), req)#퀴즈 정보 db 삽입
-
+            print('3')
             data['content'] = summary_user
             data['summary_id'] = summary_id
 
